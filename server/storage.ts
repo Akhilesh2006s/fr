@@ -92,6 +92,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.initializeData();
+    this.createSampleUsers();
   }
 
   private initializeData() {
@@ -455,6 +456,56 @@ export class MemStorage implements IStorage {
       accuracyRate,
       rank: Math.floor(Math.random() * 10000) + 1 // Mock rank for now
     };
+  }
+
+  private async createSampleUsers() {
+    // Create sample user with ID "user-1" that frontend expects
+    const sampleUser = await this.createUser({
+      username: "demo_student",
+      email: "demo@student.edu",
+      password: "password123",
+      fullName: "Arjun Kumar",
+      age: 17,
+      educationStream: "JEE",
+      grade: "12th",
+      targetExam: "JEE Main"
+    });
+
+    // Override the ID to match frontend expectations
+    const userWithFixedId: User = {
+      ...sampleUser,
+      id: "user-1"
+    };
+    this.users.set("user-1", userWithFixedId);
+
+    // Create sample test attempts for the user
+    await this.createTestAttempt({
+      userId: "user-1",
+      testId: "1",
+      score: 42,
+      totalQuestions: 50,
+      timeSpent: 3600,
+      responses: [
+        { questionId: "1", selectedAnswer: 2, timeSpent: 45 },
+        { questionId: "2", selectedAnswer: 1, timeSpent: 30 }
+      ],
+      analysis: {
+        subjectWise: [
+          { subjectId: "1", correct: 15, total: 20 },
+          { subjectId: "2", correct: 12, total: 15 },
+          { subjectId: "3", correct: 15, total: 15 }
+        ],
+        topicWise: [
+          { topicId: "1", correct: 8, total: 10 },
+          { topicId: "2", correct: 7, total: 10 }
+        ],
+        difficultyWise: [
+          { difficulty: "Easy", correct: 18, total: 20 },
+          { difficulty: "Medium", correct: 15, total: 20 },
+          { difficulty: "Hard", correct: 9, total: 10 }
+        ]
+      }
+    });
   }
 }
 
