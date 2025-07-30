@@ -96,37 +96,44 @@ export class MemStorage implements IStorage {
   }
 
   private initializeData() {
-    // Initialize subjects
+    // Initialize subjects - Include Class 10 CBSE and JEE preparation
     const subjects: Subject[] = [
-      { id: "1", name: "Physics", stream: "JEE", grade: "11-12" },
-      { id: "2", name: "Chemistry", stream: "JEE", grade: "11-12" },
-      { id: "3", name: "Mathematics", stream: "JEE", grade: "11-12" },
-      { id: "4", name: "Biology", stream: "NEET", grade: "11-12" },
-      { id: "5", name: "English", stream: "CBSE", grade: "1-12" },
+      { id: "1", name: "Physics", stream: "CBSE", grade: "10" },
+      { id: "2", name: "Chemistry", stream: "CBSE", grade: "10" },
+      { id: "3", name: "Mathematics", stream: "CBSE", grade: "10" },
+      { id: "4", name: "Science", stream: "CBSE", grade: "10" },
+      { id: "5", name: "English", stream: "CBSE", grade: "10" },
+      { id: "6", name: "Physics", stream: "JEE", grade: "11-12" },
+      { id: "7", name: "Chemistry", stream: "JEE", grade: "11-12" },
+      { id: "8", name: "Mathematics", stream: "JEE", grade: "11-12" },
     ];
     subjects.forEach(subject => this.subjects.set(subject.id, subject));
 
-    // Initialize topics
+    // Initialize topics - Class 10 CBSE focused topics
     const topics: Topic[] = [
-      { id: "1", subjectId: "1", name: "Mechanics", description: "Laws of Motion, Work Energy", difficulty: "Medium" },
-      { id: "2", subjectId: "1", name: "Rotational Motion", description: "Angular motion, Moment of Inertia", difficulty: "Hard" },
-      { id: "3", subjectId: "2", name: "Organic Chemistry", description: "Alcohols, Ethers, Aldehydes", difficulty: "Medium" },
-      { id: "4", subjectId: "3", name: "Calculus", description: "Integration, Differentiation", difficulty: "Hard" },
+      { id: "1", subjectId: "1", name: "Light & Reflection", description: "Mirrors, Refraction, Lenses", difficulty: "Easy" },
+      { id: "2", subjectId: "1", name: "Electricity", description: "Current, Resistance, Ohm's Law", difficulty: "Medium" },
+      { id: "3", subjectId: "2", name: "Acids & Bases", description: "pH, Neutralization, Salts", difficulty: "Easy" },
+      { id: "4", subjectId: "2", name: "Metals & Non-Metals", description: "Properties, Reactions, Extraction", difficulty: "Medium" },
+      { id: "5", subjectId: "3", name: "Quadratic Equations", description: "Solving, Factorization, Roots", difficulty: "Medium" },
+      { id: "6", subjectId: "3", name: "Coordinate Geometry", description: "Distance Formula, Section Formula", difficulty: "Easy" },
+      { id: "7", subjectId: "6", name: "Mechanics", description: "JEE Advanced Motion Concepts", difficulty: "Hard" },
+      { id: "8", subjectId: "6", name: "Rotational Motion", description: "Angular motion, Moment of Inertia", difficulty: "Hard" },
     ];
     topics.forEach(topic => this.topics.set(topic.id, topic));
 
-    // Initialize video lectures
+    // Initialize video lectures - Class 10 CBSE content appropriate for Harish
     const videos: VideoLecture[] = [
       {
         id: "1",
-        title: "Rotational Motion - Part 1",
-        description: "Introduction to rotational motion concepts",
+        title: "Light - Reflection and Refraction",
+        description: "Class 10 Physics - Understanding mirrors, lenses, and light behavior",
         subjectId: "1",
-        topicId: "2",
-        videoUrl: "https://example.com/video1",
-        thumbnailUrl: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb",
-        duration: 765, // 12:45 in seconds
-        difficulty: "Medium",
+        topicId: "1",
+        videoUrl: "https://example.com/cbse10-light",
+        thumbnailUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b",
+        duration: 720, // 12:00 minutes
+        difficulty: "Easy",
         language: "English",
         aiFeatures: {
           hasAutoNotes: true,
@@ -136,14 +143,48 @@ export class MemStorage implements IStorage {
       },
       {
         id: "2",
-        title: "Alcohols & Ethers",
-        description: "Organic chemistry concepts for alcohols and ethers",
+        title: "Electricity - Current & Resistance",
+        description: "Class 10 Physics - Ohm's Law, circuits, and electrical basics for JEE foundation",
+        subjectId: "1",
+        topicId: "2",
+        videoUrl: "https://example.com/cbse10-electricity",
+        thumbnailUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+        duration: 900, // 15:00 minutes
+        difficulty: "Medium",
+        language: "English",
+        aiFeatures: {
+          hasAutoNotes: true,
+          hasVisualMaps: true,
+          hasVoiceQA: true
+        }
+      },
+      {
+        id: "3",
+        title: "Quadratic Equations - Problem Solving",
+        description: "Class 10 Math - Master quadratic equations for strong JEE foundation",
+        subjectId: "3",
+        topicId: "5",
+        videoUrl: "https://example.com/cbse10-quadratic",
+        thumbnailUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904",
+        duration: 960, // 16:00 minutes
+        difficulty: "Medium",
+        language: "English",
+        aiFeatures: {
+          hasAutoNotes: true,
+          hasVisualMaps: true,
+          hasVoiceQA: true
+        }
+      },
+      {
+        id: "4",
+        title: "Acids, Bases & Salts",
+        description: "Class 10 Chemistry - pH, indicators, and chemical reactions",
         subjectId: "2",
         topicId: "3",
-        videoUrl: "https://example.com/video2",
-        thumbnailUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d",
-        duration: 1102, // 18:22 in seconds
-        difficulty: "Medium",
+        videoUrl: "https://example.com/cbse10-acids",
+        thumbnailUrl: "https://images.unsplash.com/photo-1532634883-2b4242a0e90b",
+        duration: 840, // 14:00 minutes
+        difficulty: "Easy",
         language: "English",
         aiFeatures: {
           hasAutoNotes: true,
@@ -154,27 +195,38 @@ export class MemStorage implements IStorage {
     ];
     videos.forEach(video => this.videoLectures.set(video.id, video));
 
-    // Initialize practice tests
+    // Initialize practice tests - Class 10 CBSE and JEE foundation tests
     const tests: PracticeTest[] = [
       {
         id: "1",
-        title: "JEE Main Mock Test - 15",
-        description: "Comprehensive test covering Physics, Chemistry, and Mathematics",
-        subjectIds: ["1", "2", "3"],
-        examType: "JEE_MAIN",
-        totalQuestions: 180,
-        duration: 10800, // 3 hours in seconds
-        difficulty: "Medium",
+        title: "CBSE Class 10 - Science Mock Test",
+        description: "Complete Class 10 Science practice test covering Physics, Chemistry, Biology",
+        subjectIds: ["1", "2", "4"],
+        examType: "CBSE_BOARD",
+        totalQuestions: 40,
+        duration: 5400, // 90 minutes
+        difficulty: "Easy",
         isActive: true
       },
       {
         id: "2",
-        title: "Physics Chapter Test - Mechanics",
-        description: "Focused test on mechanics concepts",
-        subjectIds: ["1"],
+        title: "Mathematics - Chapter Test",
+        description: "Class 10 Math test on Quadratic Equations and Coordinate Geometry",
+        subjectIds: ["3"],
         examType: "CHAPTER_TEST",
-        totalQuestions: 30,
-        duration: 3600, // 1 hour in seconds
+        totalQuestions: 25,
+        duration: 3600, // 60 minutes
+        difficulty: "Medium",
+        isActive: true
+      },
+      {
+        id: "3",
+        title: "JEE Foundation - Physics Basics",
+        description: "Early JEE preparation test for Class 10 students",
+        subjectIds: ["1"],
+        examType: "JEE_FOUNDATION",
+        totalQuestions: 20,
+        duration: 2400, // 40 minutes
         difficulty: "Medium",
         isActive: true
       }
@@ -459,16 +511,16 @@ export class MemStorage implements IStorage {
   }
 
   private async createSampleUsers() {
-    // Create sample user with ID "user-1" that frontend expects
+    // Create sample user with ID "user-1" that frontend expects - Harish, Class 10 CBSE preparing for IIT JEE
     const sampleUser = await this.createUser({
-      username: "demo_student",
-      email: "demo@student.edu",
+      username: "harish_student",
+      email: "harish.kumar@gmail.com",
       password: "password123",
-      fullName: "Arjun Kumar",
-      age: 17,
-      educationStream: "JEE",
-      grade: "12th",
-      targetExam: "JEE Main"
+      fullName: "Harish Kumar",
+      age: 15,
+      educationStream: "CBSE",
+      grade: "10th",
+      targetExam: "IIT JEE"
     });
 
     // Override the ID to match frontend expectations
@@ -478,34 +530,38 @@ export class MemStorage implements IStorage {
     };
     this.users.set("user-1", userWithFixedId);
 
-    // Create sample test attempts for the user
+    // Create realistic test attempts for Harish - Class 10 level performance
     await this.createTestAttempt({
       userId: "user-1",
-      testId: "1",
-      score: 42,
-      totalQuestions: 50,
-      timeSpent: 3600,
+      testId: "2", // Physics Chapter Test - Mechanics (more appropriate for Class 10)
+      score: 22,
+      totalQuestions: 30,
+      timeSpent: 2700, // 45 minutes
       responses: [
-        { questionId: "1", selectedAnswer: 2, timeSpent: 45 },
-        { questionId: "2", selectedAnswer: 1, timeSpent: 30 }
+        { questionId: "3", selectedAnswer: 1, timeSpent: 90 },
+        { questionId: "4", selectedAnswer: 2, timeSpent: 75 },
+        { questionId: "5", selectedAnswer: 3, timeSpent: 120 }
       ],
       analysis: {
         subjectWise: [
-          { subjectId: "1", correct: 15, total: 20 },
-          { subjectId: "2", correct: 12, total: 15 },
-          { subjectId: "3", correct: 15, total: 15 }
+          { subjectId: "1", correct: 22, total: 30 } // Physics only
         ],
         topicWise: [
-          { topicId: "1", correct: 8, total: 10 },
-          { topicId: "2", correct: 7, total: 10 }
+          { topicId: "1", correct: 15, total: 20 }, // Mechanics - stronger area
+          { topicId: "2", correct: 7, total: 10 }   // Rotational Motion - needs work
         ],
         difficultyWise: [
-          { difficulty: "Easy", correct: 18, total: 20 },
-          { difficulty: "Medium", correct: 15, total: 20 },
-          { difficulty: "Hard", correct: 9, total: 10 }
+          { difficulty: "Easy", correct: 12, total: 15 },   // 80% on easy
+          { difficulty: "Medium", correct: 8, total: 12 },  // 67% on medium  
+          { difficulty: "Hard", correct: 2, total: 3 }      // 67% on hard
         ]
       }
     });
+
+    // Add foundational progress tracking for Class 10 student
+    await this.updateUserProgress("user-1", "1", "1", 75); // Physics - Mechanics: 75% complete
+    await this.updateUserProgress("user-1", "1", "2", 45); // Physics - Rotational Motion: 45% complete
+    await this.updateUserProgress("user-1", "3", "4", 60); // Mathematics - Calculus basics: 60% complete
   }
 }
 
