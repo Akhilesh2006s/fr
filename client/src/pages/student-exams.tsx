@@ -91,7 +91,10 @@ export default function StudentExams() {
         console.log('🔍 Student Exams: Token found:', !!token);
         if (!token) {
           console.log('❌ Student Exams: No auth token found - redirecting to signin');
-          setLocation('/signin');
+          console.log('⏳ Student Exams: Waiting 3 seconds before redirect to see debug messages...');
+          setTimeout(() => {
+            setLocation('/signin');
+          }, 3000);
           return;
         }
 
@@ -116,11 +119,17 @@ export default function StudentExams() {
             setIsAuthenticated(true);
           } else {
             console.log('❌ Student Exams: Invalid content type - redirecting to login');
-            setLocation('/signin');
+            console.log('⏳ Student Exams: Waiting 3 seconds before redirect to see debug messages...');
+            setTimeout(() => {
+              setLocation('/signin');
+            }, 3000);
           }
         } else {
           console.log('❌ Student Exams: Auth failed with status', response.status, '- redirecting to login');
-          setLocation('/signin');
+          console.log('⏳ Student Exams: Waiting 3 seconds before redirect to see debug messages...');
+          setTimeout(() => {
+            setLocation('/signin');
+          }, 3000);
         }
       } catch (error) {
         console.error('Auth check failed:', error);
