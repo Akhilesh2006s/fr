@@ -1,0 +1,13 @@
+{
+  "name": "cognilearn-fullstack",
+  "version": "1.0.0",
+  "description": "CogniLearn - AI-Powered Learning Platform",
+  "scripts": {
+    "build": "cd client && npm run build",
+    "dev": "cd client && npm run dev",
+    "start": "cd client && npm run preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
