@@ -797,7 +797,7 @@ const TeacherDashboard = () => {
                           <div className="flex-1">
                             <p className="font-medium text-sky-900">{quiz.title}</p>
                             <p className="text-sm text-sky-600">{quiz.subject}</p>
-                            <p className="text-xs text-sky-500">{quiz.questions} questions</p>
+                            <p className="text-xs text-sky-500">{quiz.questions?.length || 0} questions</p>
                       </div>
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline" className="text-sky-600 border-sky-300">
