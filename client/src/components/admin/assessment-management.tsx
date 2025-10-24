@@ -82,7 +82,13 @@ const AssessmentManagement = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await fetch('/api/subjects');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/subjects', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setSubjects(data.subjects || []);
@@ -94,7 +100,13 @@ const AssessmentManagement = () => {
 
   const fetchAssessments = async () => {
     try {
-      const response = await fetch('/api/assessments');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
       const data = await response.json();
       setAssessments(data);
@@ -160,9 +172,11 @@ const AssessmentManagement = () => {
 
   const handleCreateAssessment = async () => {
     try {
-      const response = await fetch('/api/assessments', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newAssessment),
