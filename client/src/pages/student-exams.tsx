@@ -131,9 +131,10 @@ export default function StudentExams() {
     queryKey: ['/api/student/exams'],
     queryFn: async () => {
       console.log('Fetching student exams...');
-      const response = await fetch('/api/student/exams', {
-        credentials: 'include',
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/student/exams', {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       });
@@ -162,9 +163,10 @@ export default function StudentExams() {
     queryKey: ['/api/assessments'],
     queryFn: async () => {
       console.log('Fetching assessments...');
-      const response = await fetch('/api/assessments', {
-        credentials: 'include',
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       });
@@ -188,8 +190,12 @@ export default function StudentExams() {
   const { data: results } = useQuery({
     queryKey: ['/api/student/exam-results'],
     queryFn: async () => {
-      const response = await fetch('/api/student/exam-results', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/student/exam-results', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
       });
       if (!response.ok) throw new Error('Failed to fetch results');
       return response.json();
