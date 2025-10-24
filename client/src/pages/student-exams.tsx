@@ -86,9 +86,16 @@ export default function StudentExams() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          console.log('No auth token found');
+          setLocation('/signin');
+          return;
+        }
+
         const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
-          credentials: 'include',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           }
         });

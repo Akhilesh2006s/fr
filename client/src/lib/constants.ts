@@ -4,10 +4,14 @@ export const API_BASE_URL = 'https://asli-stud-back-production.up.railway.app';
 // Helper function to make API calls
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  
+  // Get JWT token from localStorage
+  const token = localStorage.getItem('authToken');
+  
   return fetch(url, {
-    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers,
     },
     ...options,
