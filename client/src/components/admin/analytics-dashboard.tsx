@@ -77,7 +77,13 @@ const AnalyticsDashboard = () => {
   const fetchAnalytics = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/admin/analytics');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/analytics', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       setAnalytics(data);
     } catch (error) {
