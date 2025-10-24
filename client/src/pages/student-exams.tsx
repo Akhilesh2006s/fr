@@ -72,6 +72,7 @@ export default function StudentExams() {
   const [isTakingExam, setIsTakingExam] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const [, setLocation] = useLocation();
 
   // Reset states when component mounts

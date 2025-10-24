@@ -103,8 +103,18 @@ export default function Dashboard() {
     const fetchContent = async () => {
       try {
         const [videosRes, assessmentsRes] = await Promise.all([
-          fetch('/api/student/videos'),
-          fetch('/api/student/assessments')
+          fetch('https://asli-stud-back-production.up.railway.app/api/student/videos', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+              'Content-Type': 'application/json'
+            }
+          }),
+          fetch('https://asli-stud-back-production.up.railway.app/api/student/assessments', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+              'Content-Type': 'application/json'
+            }
+          })
         ]);
 
         if (videosRes.ok) {

@@ -45,7 +45,7 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (data: { message: string; context?: any }) => {
-      const response = await apiRequest("POST", "/api/ai-chat", {
+      const response = await apiRequest("POST", "https://asli-stud-back-production.up.railway.app/api/ai-chat", {
         userId,
         message: data.message,
         context: data.context || context,
@@ -68,7 +68,7 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
   // Image analysis mutation
   const analyzeImageMutation = useMutation({
     mutationFn: async (data: { image: string; context?: string }) => {
-      const response = await apiRequest("POST", "/api/ai-chat/analyze-image", data);
+      const response = await apiRequest("POST", "https://asli-stud-back-production.up.railway.app/api/ai-chat/analyze-image", data);
       return response.json();
     },
     onSuccess: (data) => {

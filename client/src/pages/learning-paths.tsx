@@ -101,9 +101,10 @@ export default function LearningPaths() {
         setIsLoadingSubjects(true);
         
         // Fetch subjects
-        const subjectsResponse = await fetch('/api/subjects', {
-          credentials: 'include',
+        const token = localStorage.getItem('authToken');
+        const subjectsResponse = await fetch('https://asli-stud-back-production.up.railway.app/api/subjects', {
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           }
         });
@@ -308,7 +309,13 @@ export default function LearningPaths() {
   useEffect(() => {
     const fetchLearningPaths = async () => {
       try {
-        const response = await fetch('/api/subjects');
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/subjects', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         const data = await response.json();
         if (data.success) {
           setLearningPaths(data.subjects);
