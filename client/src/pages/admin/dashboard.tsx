@@ -66,6 +66,9 @@ const AdminDashboard = () => {
           }
         } else {
           console.log('Admin dashboard auth check failed with status:', response.status);
+          const errorText = await response.text();
+          console.log('Response text:', errorText);
+          alert(`Authentication failed. Status: ${response.status}, Response: ${errorText}`);
           window.location.href = '/signin';
         }
       } catch (error) {
