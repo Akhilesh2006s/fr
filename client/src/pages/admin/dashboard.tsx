@@ -56,12 +56,16 @@ const AdminDashboard = () => {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('Admin dashboard auth check - user data:', data);
           if (data.user && data.user.role === 'admin') {
+            console.log('Admin user authenticated successfully');
             setIsAuthenticated(true);
           } else {
+            console.log('User is not admin, role:', data.user?.role);
             window.location.href = '/signin';
           }
         } else {
+          console.log('Admin dashboard auth check failed with status:', response.status);
           window.location.href = '/signin';
         }
       } catch (error) {

@@ -54,8 +54,10 @@ export default function Dashboard() {
         
         if (response.ok) {
           const userData = await response.json();
+          console.log('Dashboard auth check - user data:', userData);
           setUser(userData.user);
         } else {
+          console.log('Dashboard auth check failed with status:', response.status);
           // Fallback to mock data if not authenticated
           setUser({ 
             fullName: "Student", 
