@@ -100,8 +100,12 @@ const ExamManagement = () => {
   const checkAuthAndFetchExams = async () => {
     try {
       // Check if user is authenticated
-      const authResponse = await fetch('/api/auth/me', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const authResponse = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!authResponse.ok) {
@@ -127,8 +131,12 @@ const ExamManagement = () => {
 
   const fetchExams = async () => {
     try {
-      const response = await fetch('/api/admin/exams', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/exams', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       if (response.ok) {
         const data = await response.json();
