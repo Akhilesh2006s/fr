@@ -63,8 +63,12 @@ const UserManagement = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await fetch('/api/admin/users', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -123,10 +127,13 @@ const UserManagement = () => {
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await fetch('/api/admin/users', {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json' 
+          },
         body: JSON.stringify({
           fullName: newStudent.name,
           email: newStudent.email,
@@ -161,9 +168,12 @@ const UserManagement = () => {
     console.log('Uploading file:', file.name, file.size, 'bytes');
     
     try {
-      const response = await fetch('/api/admin/users/upload', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users/upload', {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData
       });
       
@@ -221,9 +231,13 @@ const UserManagement = () => {
 
   const handleDeleteAllStudents = async () => {
     try {
-      const response = await fetch('/api/admin/users/delete-all', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users/delete-all', {
         method: 'DELETE',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {

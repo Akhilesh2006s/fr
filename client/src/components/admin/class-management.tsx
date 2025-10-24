@@ -55,8 +55,12 @@ const ClassManagement = () => {
 
   const fetchClasses = async () => {
     try {
-      const response = await fetch('/api/admin/classes', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/classes', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -100,9 +104,13 @@ const ClassManagement = () => {
   const handleAddClass = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/admin/classes', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/classes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        },
         body: JSON.stringify(newClass)
       });
       
