@@ -75,7 +75,13 @@ const TeacherVideoManagement = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await fetch('/api/teacher/subjects');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/subjects', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setSubjects(data.subjects || []);
@@ -87,7 +93,13 @@ const TeacherVideoManagement = () => {
 
   const fetchVideos = async () => {
     try {
-      const response = await fetch('/api/teacher/videos');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/videos', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setVideos(data);
