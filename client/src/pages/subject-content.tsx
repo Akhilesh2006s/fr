@@ -82,15 +82,15 @@ export default function SubjectContent() {
   const fetchSubjectContent = async (subjectId: string) => {
     try {
       const [subjectResponse, assessmentsResponse] = await Promise.all([
-        fetch(`/api/subjects/${subjectId}`, {
-          credentials: 'include',
+        fetch(`https://asli-stud-back-production.up.railway.app/api/subjects/${subjectId}`, {
           headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
           }
         }),
-        fetch('/api/student/assessments', {
-          credentials: 'include',
+        fetch('https://asli-stud-back-production.up.railway.app/api/student/assessments', {
           headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
           }
         })
