@@ -27,34 +27,21 @@ const Login = () => {
     try {
       // Test backend connection first
       console.log('Testing backend connection...');
-      const healthCheck = await fetch('/api/health');
+      const healthCheck = await fetch('https://asli-stud-back-production.up.railway.app/api/health');
       if (!healthCheck.ok) {
         throw new Error('Backend server is not running. Please check the server status.');
       }
       console.log('Backend server is running');
 
-      // Try proxy first, then direct backend URL
-      let response;
-      try {
-        response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify(formData),
-        });
-      } catch (proxyError) {
-        console.log('Proxy failed, trying direct backend URL...');
-        response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify(formData),
-        });
-      }
+      // Use direct backend URL for production
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
 
