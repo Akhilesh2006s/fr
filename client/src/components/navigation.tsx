@@ -14,9 +14,12 @@ export default function Navigation() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const response = await fetch('/api/auth/logout', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/logout', {
         method: 'POST',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (response.ok) {
