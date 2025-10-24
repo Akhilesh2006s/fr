@@ -127,11 +127,25 @@ const AdminDashboard = () => {
 
   const fetchAdminStats = async () => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.log('No auth token found for admin stats');
+        return;
+      }
+
       const [videosRes, pathsRes, assessmentsRes, usersRes] = await Promise.all([
-        fetch('/api/videos'),
-        fetch('/api/learning-paths'),
-        fetch('/api/assessments'),
-        fetch('/api/admin/users')
+        fetch('https://asli-stud-back-production.up.railway.app/api/videos', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://asli-stud-back-production.up.railway.app/api/learning-paths', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
       ]);
 
       const videos = await videosRes.json();
@@ -354,9 +368,12 @@ const AdminDashboard = () => {
                 variant="outline"
                 onClick={async () => {
                   try {
-                    const response = await fetch('/api/auth/logout', {
+                    const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/logout', {
                       method: 'POST',
-                      credentials: 'include'
+                      headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                        'Content-Type': 'application/json'
+                      }
                     });
                     if (response.ok) {
                       window.location.href = '/signin';

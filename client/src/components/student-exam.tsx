@@ -218,9 +218,12 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
 
     // Save result to backend
     try {
-      await fetch('/api/student/exam-results', {
+      await fetch('https://asli-stud-back-production.up.railway.app/api/student/exam-results', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
         credentials: 'include',
         body: JSON.stringify(result)
       });
