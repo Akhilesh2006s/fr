@@ -48,7 +48,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           credentials: 'include'
         });
         

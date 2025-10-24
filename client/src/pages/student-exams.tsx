@@ -86,7 +86,7 @@ export default function StudentExams() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
