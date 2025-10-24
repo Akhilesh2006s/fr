@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@/lib/constants';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -511,7 +512,7 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
                           {(() => {
                             const imageUrl = currentQuestion.questionImage.startsWith('http') 
                               ? currentQuestion.questionImage 
-                              : `http://localhost:3001${currentQuestion.questionImage}`;
+                              : `${API_BASE_URL}${currentQuestion.questionImage}`;
                             console.log('Question image URL:', imageUrl);
                             return (
                               <div className="relative">

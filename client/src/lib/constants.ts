@@ -1,3 +1,6 @@
+// API Configuration
+export const API_BASE_URL = 'https://asli-stud-back-production.up.railway.app';
+
 export const EDUCATION_STREAMS = [
   { value: "CBSE", label: "CBSE", ageRange: "5-18" },
   { value: "ICSE", label: "ICSE", ageRange: "5-18" },
