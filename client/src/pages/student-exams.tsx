@@ -76,7 +76,7 @@ export default function StudentExams() {
 
   // Reset states when component mounts
   useEffect(() => {
-    console.log('StudentExams component mounted, resetting states');
+    console.log('🚀 Student Exams: Component mounted, resetting states');
     setCurrentExam(null);
     setExamResult(null);
     setIsTakingExam(false);
@@ -86,13 +86,16 @@ export default function StudentExams() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('🔍 Student Exams: Starting authentication check...');
         const token = localStorage.getItem('authToken');
+        console.log('🔍 Student Exams: Token found:', !!token);
         if (!token) {
-          console.log('No auth token found');
+          console.log('❌ Student Exams: No auth token found - redirecting to signin');
           setLocation('/signin');
           return;
         }
 
+        console.log('🔍 Student Exams: Making auth request to backend...');
         const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -100,18 +103,23 @@ export default function StudentExams() {
           }
         });
         
+        console.log('🔍 Student Exams: Auth response status:', response.status);
+        console.log('🔍 Student Exams: Auth response ok:', response.ok);
+        
         if (response.ok) {
           const contentType = response.headers.get('content-type');
+          console.log('🔍 Student Exams: Content-Type:', contentType);
           if (contentType && contentType.includes('application/json')) {
             const userData = await response.json();
-            console.log('User authenticated:', userData.user);
+            console.log('✅ Student Exams: User authenticated successfully:', userData.user?.email);
+            setUser(userData.user);
             setIsAuthenticated(true);
           } else {
-            console.warn('Auth response is not JSON, allowing access with fallback');
-            setIsAuthenticated(true);
+            console.log('❌ Student Exams: Invalid content type - redirecting to login');
+            setLocation('/signin');
           }
         } else {
-          console.log('User not authenticated, redirecting to login');
+          console.log('❌ Student Exams: Auth failed with status', response.status, '- redirecting to login');
           setLocation('/signin');
         }
       } catch (error) {
@@ -130,14 +138,16 @@ export default function StudentExams() {
   const { data: exams, isLoading, error } = useQuery({
     queryKey: ['/api/student/exams'],
     queryFn: async () => {
-      console.log('Fetching student exams...');
+      console.log('🔍 Student Exams: Fetching student exams...');
       const token = localStorage.getItem('authToken');
+      console.log('🔍 Student Exams: Token for exams API:', !!token);
       const response = await fetch('https://asli-stud-back-production.up.railway.app/api/student/exams', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       });
+      console.log('🔍 Student Exams: Exams API response status:', response.status);
       console.log('Response status:', response.status);
       if (!response.ok) {
         const errorText = await response.text();
@@ -162,14 +172,16 @@ export default function StudentExams() {
   const { data: assessments, isLoading: isLoadingAssessments, error: assessmentsError } = useQuery({
     queryKey: ['/api/assessments'],
     queryFn: async () => {
-      console.log('Fetching assessments...');
+      console.log('🔍 Student Exams: Fetching assessments...');
       const token = localStorage.getItem('authToken');
+      console.log('🔍 Student Exams: Token for assessments API:', !!token);
       const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       });
+      console.log('🔍 Student Exams: Assessments API response status:', response.status);
       if (!response.ok) {
         console.warn('Assessments API failed, using fallback data');
         return { assessments: [] };
@@ -190,14 +202,20 @@ export default function StudentExams() {
   const { data: results } = useQuery({
     queryKey: ['/api/student/exam-results'],
     queryFn: async () => {
+      console.log('🔍 Student Exams: Fetching exam results...');
       const token = localStorage.getItem('authToken');
+      console.log('🔍 Student Exams: Token for results API:', !!token);
       const response = await fetch('https://asli-stud-back-production.up.railway.app/api/student/exam-results', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       });
-      if (!response.ok) throw new Error('Failed to fetch results');
+      console.log('🔍 Student Exams: Results API response status:', response.status);
+      if (!response.ok) {
+        console.log('❌ Student Exams: Results API failed with status:', response.status);
+        throw new Error('Failed to fetch results');
+      }
       return response.json();
     },
     enabled: isAuthenticated // Only run when authenticated
