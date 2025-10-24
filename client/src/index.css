@@ -3,146 +3,122 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(239, 84%, 67%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(185, 94%, 87%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(41, 96%, 70%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
-  --success: hsl(142, 76%, 36%);
-  --warning: hsl(25, 95%, 53%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  /* Light theme color tokens for clean, modern design */
+  --background: #ffffff; /* Pure white background */
+  --foreground: #1f2937; /* Dark gray for text and highlights */
+  --card: #ffffff; /* White card backgrounds */
+  --card-foreground: #1f2937; /* Dark text on cards */
+  --popover: #ffffff; /* White popover backgrounds */
+  --popover-foreground: #1f2937; /* Dark text in popovers */
+  --primary: #3b82f6; /* Blue accent for highlights */
+  --primary-foreground: #ffffff; /* White text on blue */
+  --secondary: #f3f4f6; /* Light gray for secondary elements */
+  --secondary-foreground: #374151; /* Dark gray text on secondary */
+  --muted: #f9fafb; /* Very light gray for muted elements */
+  --muted-foreground: #6b7280; /* Gray text for muted */
+  --accent: #3b82f6; /* Blue for interactive elements */
+  --accent-foreground: #ffffff; /* White text on accent */
+  --destructive: #ef4444; /* Red for destructive actions */
+  --destructive-foreground: #ffffff; /* White text for destructive */
+  --border: #e5e7eb; /* Light gray borders for contrast */
+  --input: #ffffff; /* White inputs */
+  --ring: #3b82f6; /* Blue for focus rings */
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+  --radius: 0.5rem; /* Softer rounded corners */
+  --sidebar: #f8fafc; /* Light sidebar */
+  --sidebar-foreground: #1f2937; /* Dark sidebar text */
+  --sidebar-primary: #3b82f6; /* Blue for primary sidebar */
+  --sidebar-primary-foreground: #ffffff; /* White text on sidebar primary */
+  --sidebar-accent: #f1f5f9; /* Light gray for sidebar accent */
+  --sidebar-accent-foreground: #1f2937; /* Dark text on sidebar accent */
+  --sidebar-border: #e2e8f0; /* Light gray sidebar borders */
+  --sidebar-ring: #3b82f6; /* Blue for sidebar focus */
+  --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
+  /* Added Figtree as the primary font variable */
+  --font-figtree: "Figtree", sans-serif; /* Figtree font family configuration */
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(239, 84%, 67%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(240, 3.7%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
+  /* Dark mode maintains the same dramatic black background theme */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: rgba(255, 255, 255, 0.05);
+  --card-foreground: #ffffff;
+  --popover: rgba(0, 0, 0, 0.9);
+  --popover-foreground: #ffffff;
+  --primary: #a855f7;
+  --primary-foreground: #000000;
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.2);
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: #a855f7;
+  --accent-foreground: #000000;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #a855f7;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #a855f7;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: rgba(255, 255, 255, 0.1);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #a855f7;
+  --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
+  /* Added Figtree font variable for dark mode consistency */
+  --font-figtree: "Figtree", sans-serif; /* Figtree font family configuration */
 }
+
 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .gradient-primary {
-    background: linear-gradient(135deg, hsl(239, 84%, 67%) 0%, hsl(185, 94%, 87%) 100%);
-  }
-
-  .gradient-accent {
-    background: linear-gradient(135deg, hsl(41, 96%, 70%) 0%, hsl(25, 95%, 53%) 100%);
-  }
-
-  .gradient-success {
-    background: linear-gradient(135deg, hsl(142, 76%, 36%) 0%, hsl(120, 73%, 75%) 100%);
+    @apply bg-background text-foreground;
+    /* Set Figtree as the default font family for the entire website */
+    font-family: var(--font-figtree);
   }
 }
 
-@layer components {
-  .age-theme-kid-friendly {
-    @apply text-base;
-  }
+.instrument {
+  font-family: var(--font-instrument-serif);
+}
 
-  .age-theme-teen {
-    @apply text-base;
-  }
+/* Dashboard custom styles */
+.gradient-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
 
-  .age-theme-student {
-    @apply text-base;
-  }
+.stats-card {
+  @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+}
 
-  .age-theme-college {
-    @apply text-base;
-  }
+.subject-progress-card {
+  @apply bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow duration-200;
+}
 
-  .age-theme-professional {
-    @apply text-base;
-  }
+.video-thumbnail {
+  @apply relative rounded-lg overflow-hidden cursor-pointer;
+  position: relative;
+}
 
-  .stats-card {
-    @apply bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow;
-  }
+.video-overlay {
+  @apply absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center;
+}
 
-  .subject-progress-card {
-    @apply flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors;
-  }
-
-  .video-thumbnail {
-    @apply relative cursor-pointer rounded-lg overflow-hidden;
-  }
-
-  .video-overlay {
-    @apply absolute inset-0 bg-black/40 hover:bg-black/50 transition-colors rounded-lg flex items-center justify-center;
-  }
-
-  .play-button {
-    @apply w-12 h-12 bg-white/90 rounded-full flex items-center justify-center;
-  }
-
-  .test-card {
-    @apply border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors;
-  }
-
-  .chat-message-user {
-    @apply bg-blue-600 rounded-lg px-3 py-2 max-w-xs text-white;
-  }
-
-  .chat-message-ai {
-    @apply bg-gray-50 rounded-lg px-3 py-2 max-w-xs text-gray-900;
-  }
-
-  .quick-action-button {
-    @apply p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors text-left;
-  }
-
-  .bottom-nav-button {
-    @apply flex flex-col items-center justify-center py-2 transition-colors;
-  }
-
-  .achievement-card {
-    @apply flex items-center space-x-3 p-2 bg-amber-50 rounded-lg border border-amber-100;
-  }
-
-  .progress-bar {
-    @apply w-full bg-gray-200 rounded-full h-2;
-  }
-
-  .progress-fill {
-    @apply h-2 rounded-full;
-  }
+.play-button {
+  @apply w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-primary hover:bg-white transition-colors duration-200;
 }

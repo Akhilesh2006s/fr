@@ -8,12 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import Navigation from "@/components/navigation";
 import VideoPlayer from "@/components/video-player";
+import VideoModal from "@/components/video-modal";
 import { 
   Play, 
   Search, 
   Filter, 
   Clock, 
-  Star,
   BookOpen,
   Zap,
   FileText,
@@ -22,22 +22,108 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { VideoLecture, Subject } from "@shared/schema";
 
+// Add shimmer animation styles
+const shimmerStyles = `
+  @keyframes shimmer {
+    0% { 
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.1);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.4), 0 0 80px rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
+    }
+    100% { 
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.1);
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  
+  @keyframes glow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = shimmerStyles;
+  if (!document.head.querySelector('style[data-shimmer]')) {
+    styleSheet.setAttribute('data-shimmer', 'true');
+    document.head.appendChild(styleSheet);
+  }
+}
+
 export default function VideoLectures() {
   const [selectedVideo, setSelectedVideo] = useState<VideoLecture | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const isMobile = useIsMobile();
 
-  // Fetch video lectures
+  // Generate random bright colors with SHINING effects for video cards
+  const getRandomBrightColor = (index: number) => {
+    const brightColors = [
+      'bg-gradient-to-br from-pink-400 to-pink-600 shadow-pink-500/50 shadow-2xl',
+      'bg-gradient-to-br from-purple-400 to-purple-600 shadow-purple-500/50 shadow-2xl',
+      'bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50 shadow-2xl',
+      'bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/50 shadow-2xl',
+      'bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-yellow-500/50 shadow-2xl',
+      'bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/50 shadow-2xl',
+      'bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-500/50 shadow-2xl',
+      'bg-gradient-to-br from-teal-400 to-teal-600 shadow-teal-500/50 shadow-2xl',
+      'bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-500/50 shadow-2xl',
+      'bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-cyan-500/50 shadow-2xl',
+      'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-500/50 shadow-2xl',
+      'bg-gradient-to-br from-violet-400 to-violet-600 shadow-violet-500/50 shadow-2xl',
+      'bg-gradient-to-br from-rose-400 to-rose-600 shadow-rose-500/50 shadow-2xl',
+      'bg-gradient-to-br from-lime-400 to-lime-600 shadow-lime-500/50 shadow-2xl',
+      'bg-gradient-to-br from-amber-400 to-amber-600 shadow-amber-500/50 shadow-2xl'
+    ];
+    return brightColors[index % brightColors.length];
+  };
+
+  // Helper function to extract YouTube video ID
+  const extractYouTubeId = (url: string): string | null => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const handleVideoClick = (video: VideoLecture) => {
+    setSelectedVideo(video);
+    setIsVideoModalOpen(true);
+  };
+
+  const handleCloseVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setSelectedVideo(null);
+  };
+
+  // Fetch video lectures (from teacher-created content)
   const { data: videos = [], isLoading: videosLoading } = useQuery<VideoLecture[]>({
-    queryKey: ["/api/video-lectures"],
+    queryKey: ["/api/student/videos"],
+    queryFn: async () => {
+      const response = await fetch("/api/student/videos");
+      if (!response.ok) throw new Error("Failed to fetch videos");
+      return response.json();
+    },
   });
 
   // Fetch subjects for filter
-  const { data: subjects = [] } = useQuery<Subject[]>({
+  const { data: subjectsData } = useQuery({
     queryKey: ["/api/subjects"],
   });
+  
+  const subjects = subjectsData?.subjects || [];
 
   // Filter videos based on search and filters
   const filteredVideos = videos.filter(video => {
@@ -65,23 +151,15 @@ export default function VideoLectures() {
   };
 
   const getSubjectName = (subjectId: string) => {
-    const subject = subjects.find(s => s.id === subjectId);
+    const subject = subjects.find(s => s._id === subjectId);
     return subject?.name || `Subject ${subjectId}`;
   };
 
-  if (selectedVideo) {
-    return (
-      <VideoPlayer 
-        video={selectedVideo} 
-        onClose={() => setSelectedVideo(null)} 
-      />
-    );
-  }
 
   return (
     <>
       <Navigation />
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isMobile ? 'pb-20' : ''}`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 ${isMobile ? 'pb-20' : ''}`}>
         
         {/* Header */}
         <div className="mb-8">
@@ -110,7 +188,7 @@ export default function VideoLectures() {
                 <SelectContent>
                   <SelectItem value="all">All Subjects</SelectItem>
                   {subjects.map(subject => (
-                    <SelectItem key={subject.id} value={subject.id}>
+                    <SelectItem key={subject._id} value={subject._id}>
                       {subject.name}
                     </SelectItem>
                   ))}
@@ -134,7 +212,7 @@ export default function VideoLectures() {
 
         {/* Video Grid */}
         {videosLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Card key={i}>
                 <Skeleton className="h-48 w-full rounded-t-lg" />
@@ -158,16 +236,36 @@ export default function VideoLectures() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredVideos.map((video) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {filteredVideos.map((video, index) => (
               <Card 
-                key={video.id} 
-                className="group cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => setSelectedVideo(video)}
+                key={video._id} 
+                className={`group cursor-pointer hover:shadow-lg transition-all duration-500 hover:scale-105 hover:rotate-1 ${getRandomBrightColor(index)} relative overflow-hidden`}
+                onClick={() => handleVideoClick(video)}
+                style={{
+                  animation: `shimmer ${2 + (index % 3)}s ease-in-out infinite alternate`,
+                  boxShadow: `0 0 30px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.1), 0 0 90px rgba(255, 255, 255, 0.05)`
+                }}
               >
+                {/* SHINING SPARKLE EFFECT */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                
+                {/* GLOWING BORDER EFFECT */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-white/30 via-white/50 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+                
+                {/* SPARKLING PARTICLES */}
+                <div className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full animate-ping opacity-70 shadow-lg"></div>
+                <div className="absolute top-4 right-6 w-1 h-1 bg-white rounded-full animate-pulse opacity-60 shadow-md" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute top-6 right-3 w-1.5 h-1.5 bg-white rounded-full animate-bounce opacity-80 shadow-lg" style={{animationDelay: '1s'}}></div>
+                <div className="absolute bottom-4 left-3 w-1 h-1 bg-yellow-300 rounded-full animate-ping opacity-90 shadow-lg" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-6 right-4 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse opacity-70 shadow-md" style={{animationDelay: '2s'}}></div>
+                <div className="absolute top-8 left-4 w-1 h-1 bg-pink-300 rounded-full animate-bounce opacity-80 shadow-lg" style={{animationDelay: '0.8s'}}></div>
+                
+                {/* SHIMMERING OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div className="relative">
                   <img
-                    src={video.thumbnailUrl || "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450"}
+                    src={video.thumbnailUrl || (video.isYouTubeVideo && video.youtubeUrl ? `https://img.youtube.com/vi/${extractYouTubeId(video.youtubeUrl)}/maxresdefault.jpg` : "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450")}
                     alt={video.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
@@ -180,26 +278,33 @@ export default function VideoLectures() {
                   {/* Duration badge */}
                   <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs flex items-center">
                     <Clock className="w-3 h-3 mr-1" />
-                    {formatDuration(video.duration || 0)}
+                    {Math.floor((video.duration || 0) / 60)}:{(video.duration || 0) % 60 < 10 ? '0' : ''}{(video.duration || 0) % 60}
                   </div>
                 </div>
 
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      {getSubjectName(video.subjectId || '')}
-                    </Badge>
-                    <Badge className={`text-xs ${getDifficultyColor(video.difficulty)}`}>
+                    <div className="flex items-center space-x-2">
+                      <Badge className="text-xs bg-white/20 text-white border-white/30 backdrop-blur-sm group-hover:bg-white/30 group-hover:shadow-lg transition-all duration-500">
+                        {video.subjectId}
+                      </Badge>
+                      {video.isYouTubeVideo && (
+                        <Badge className="text-xs bg-red-500/80 text-white border-red-400 backdrop-blur-sm group-hover:bg-red-500 group-hover:shadow-red-500/50 group-hover:shadow-lg transition-all duration-500">
+                          YouTube
+                        </Badge>
+                      )}
+                    </div>
+                    <Badge className={`text-xs bg-white/20 text-white border-white/30 backdrop-blur-sm group-hover:bg-white/30 group-hover:shadow-lg transition-all duration-500`}>
                       {video.difficulty}
                     </Badge>
                   </div>
 
-                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                  <h3 className="font-semibold text-white mb-2 group-hover:text-yellow-200 transition-all duration-500 drop-shadow-lg group-hover:drop-shadow-2xl group-hover:glow">
                     {video.title}
                   </h3>
                   
                   {video.description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-sm text-white/90 mb-3 line-clamp-2 drop-shadow-md group-hover:text-white transition-all duration-500">
                       {video.description}
                     </p>
                   )}
@@ -229,11 +334,7 @@ export default function VideoLectures() {
                   )}
 
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-xs text-gray-500">{video.language}</span>
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="text-xs ml-1">4.8</span>
-                    </div>
+                    <span className="text-xs text-white/80">{video.language}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -284,6 +385,13 @@ export default function VideoLectures() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Video Modal */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={handleCloseVideoModal}
+        video={selectedVideo}
+      />
     </>
   );
 }

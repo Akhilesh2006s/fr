@@ -33,5 +33,12 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    proxy: {
+      '/api': {
+        target: 'https://asli-stud-back-production.up.railway.app',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 });

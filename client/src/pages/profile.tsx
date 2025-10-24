@@ -205,7 +205,7 @@ export default function Profile() {
               <div className="flex items-center space-x-4">
                 <div className="w-20 h-20 gradient-accent rounded-full flex items-center justify-center">
                   <span className="text-2xl font-bold text-white">
-                    {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    {user.fullName?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                   </span>
                 </div>
                 <div>
@@ -225,7 +225,7 @@ export default function Profile() {
                     </div>
                   ) : (
                     <>
-                      <h1 className="text-2xl font-bold text-gray-900">{user.fullName}</h1>
+                      <h1 className="text-2xl font-bold text-gray-900">{user.fullName || 'User'}</h1>
                       <p className="text-gray-600">{user.email}</p>
                     </>
                   )}
@@ -266,7 +266,7 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           
           {/* Main Content */}
           <div className="lg:col-span-2">
@@ -288,7 +288,7 @@ export default function Profile() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-orange-600 mb-1">
                           {stats.streak}

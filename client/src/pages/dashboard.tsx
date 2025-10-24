@@ -20,23 +20,169 @@ import {
   Users,
   Star,
   Clock,
-  Award
+  Award,
+  Target
 } from "lucide-react";
 import { Link } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState, useEffect } from "react";
+import YouTubePlayer from '@/components/youtube-player';
+import DriveViewer from '@/components/drive-viewer';
+import VideoModal from '@/components/video-modal';
 
 // Mock user ID - in a real app, this would come from authentication
 const MOCK_USER_ID = "user-1";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
+  const [user, setUser] = useState<any>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [videos, setVideos] = useState<any[]>([]);
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [assessmentsLoading, setAssessmentsLoading] = useState(true);
+  const [isLoadingContent, setIsLoadingContent] = useState(true);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.user);
+        } else {
+          // Fallback to mock data if not authenticated
+          setUser({ 
+            fullName: "Student", 
+            email: "student@example.com", 
+            age: 18, 
+            educationStream: "JEE" 
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        // Fallback to mock data
+        setUser({ 
+          fullName: "Student", 
+          email: "student@example.com", 
+          age: 18, 
+          educationStream: "JEE" 
+        });
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Fetch content data
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const [videosRes, assessmentsRes] = await Promise.all([
+          fetch('/api/student/videos'),
+          fetch('/api/student/assessments')
+        ]);
+
+        if (videosRes.ok) {
+          const videosData = await videosRes.json();
+          setVideos(videosData.slice(0, 3)); // Show first 3 videos
+        }
+
+        if (assessmentsRes.ok) {
+          const assessmentsData = await assessmentsRes.json();
+          console.log('Dashboard fetched assessments:', assessmentsData);
+          console.log('Number of assessments:', assessmentsData.length);
+          setAssessments(assessmentsData.slice(0, 3)); // Show first 3 assessments
+          setAssessmentsLoading(false);
+        } else {
+          console.error('Failed to fetch assessments:', assessmentsRes.status);
+          setAssessmentsLoading(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch content:', error);
+        // Set mock data for development
+        setVideos([
+          {
+            id: '1',
+            title: 'Calculus Fundamentals',
+            description: 'Basic calculus concepts',
+            subject: 'Mathematics',
+            duration: 45,
+            youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            isYouTubeVideo: true,
+            isActive: true
+          },
+          {
+            id: '2',
+            title: 'Physics Mechanics',
+            description: 'Introduction to mechanics',
+            subject: 'Physics',
+            duration: 60,
+            videoUrl: 'https://example.com/video.mp4',
+            isYouTubeVideo: false,
+            isActive: true
+          }
+        ]);
+        setAssessments([
+          {
+            id: '1',
+            title: 'Mathematics Quiz',
+            description: 'Basic math concepts',
+            subject: 'Mathematics',
+            type: 'quiz',
+            difficulty: 'easy',
+            duration: 30,
+            totalMarks: 100,
+            passingMarks: 50,
+            isDriveQuiz: true,
+            driveLink: 'https://drive.google.com/file/d/1ABC123/view',
+            isActive: true
+          },
+          {
+            id: '2',
+            title: 'Physics Exam',
+            description: 'Physics midterm exam',
+            subject: 'Physics',
+            type: 'exam',
+            difficulty: 'medium',
+            duration: 120,
+            totalMarks: 150,
+            passingMarks: 90,
+            isDriveQuiz: false,
+            isActive: true
+          }
+        ]);
+      } finally {
+        setIsLoadingContent(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  const handleWatchVideo = (video: any) => {
+    setSelectedVideo(video);
+    setIsVideoModalOpen(true);
+  };
+
+  const handleCloseVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setSelectedVideo(null);
+  };
 
   // Fetch dashboard data
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ["/api/users", MOCK_USER_ID, "dashboard"],
   });
 
-  if (isLoading) {
+  if (isLoading || isLoadingUser || isLoadingContent) {
     return (
       <>
         <Navigation />
@@ -55,7 +201,6 @@ export default function Dashboard() {
   }
 
   const stats = (dashboardData as any)?.stats || { streak: 0, questionsAnswered: 0, accuracyRate: 0, rank: 0 };
-  const user = (dashboardData as any)?.user || { fullName: "Student", age: 18, educationStream: "JEE" };
   const recommendedVideos = (dashboardData as any)?.recommendedVideos || [];
   const availableTests = (dashboardData as any)?.availableTests || [];
 
@@ -68,17 +213,17 @@ export default function Dashboard() {
   return (
     <>
       <Navigation />
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isMobile ? 'pb-20' : ''}`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 bg-gray-50 min-h-screen ${isMobile ? 'pb-20' : ''}`}>
         
         {/* Welcome Section */}
         <div className="mb-8">
           <div className="gradient-primary rounded-2xl p-8 text-white relative overflow-hidden">
             <div className="relative z-10">
               <h1 className="text-3xl font-bold mb-2">
-                Welcome back, {user.fullName.split(' ')[0]}!
+                Welcome back, {user?.email || 'Student'}!
               </h1>
               <p className="text-blue-100 mb-6">
-                Ready to continue your {user.educationStream} preparation journey? Your AI tutor has personalized recommendations waiting.
+                Ready to continue your {user?.educationStream || 'JEE'} preparation journey? Your AI tutor has personalized recommendations waiting.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -101,7 +246,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
           <div className="stats-card">
             <div className="flex items-center justify-between">
               <div>
@@ -151,6 +296,119 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Content Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
+
+          {/* Videos Section */}
+          <Card className="hover:shadow-lg transition-shadow duration-200">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-900">Video Lectures</CardTitle>
+                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  {videos.length}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {videos.map((video, index) => (
+                  <div key={video.id} className={`flex items-center justify-between p-3 ${index % 2 === 0 ? 'bg-purple-50' : 'bg-orange-50'} rounded-lg`}>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 ${index % 2 === 0 ? 'bg-purple-100' : 'bg-orange-100'} rounded-full flex items-center justify-center`}>
+                        {video.isYouTubeVideo ? (
+                          <Play className={`w-4 h-4 ${index % 2 === 0 ? 'text-purple-600' : 'text-orange-600'}`} />
+                        ) : (
+                          <Play className={`w-4 h-4 ${index % 2 === 0 ? 'text-purple-600' : 'text-orange-600'}`} />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{video.title}</p>
+                        <p className="text-xs text-gray-500">{video.duration} min • {video.subject}</p>
+                        {video.isYouTubeVideo && (
+                          <span className="text-xs text-red-600">YouTube</span>
+                        )}
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className={`${index % 2 === 0 ? 'text-purple-600 border-purple-200' : 'text-orange-600 border-orange-200'}`}
+                      onClick={() => handleWatchVideo(video)}
+                    >
+                      Watch
+                    </Button>
+                  </div>
+                ))}
+                {videos.length === 0 && (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 text-sm">No videos available</p>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4">
+                <Link to="/video-lectures">
+                  <Button variant="outline" className="w-full">
+                    View All Videos
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Assessments Section */}
+          <Card className="hover:shadow-lg transition-shadow duration-200">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-900">Assessments</CardTitle>
+                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                  {assessments.length}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {assessments.map((assessment, index) => (
+                  <div key={assessment._id || assessment.id} className={`flex items-center justify-between p-3 ${index % 2 === 0 ? 'bg-red-50' : 'bg-indigo-50'} rounded-lg`}>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 ${index % 2 === 0 ? 'bg-red-100' : 'bg-indigo-100'} rounded-full flex items-center justify-center`}>
+                        <Target className={`w-4 h-4 ${index % 2 === 0 ? 'text-red-600' : 'text-indigo-600'}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{assessment.title}</p>
+                        <p className="text-xs text-gray-500">{assessment.duration} min • {assessment.totalPoints} points</p>
+                        {assessment.isDriveQuiz && (
+                          <span className="text-xs text-blue-600">Google Drive</span>
+                        )}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" className={`${index % 2 === 0 ? 'text-red-600 border-red-200' : 'text-indigo-600 border-indigo-200'}`}>
+                      Take
+                    </Button>
+                  </div>
+                ))}
+                {assessmentsLoading ? (
+                  <div className="text-center py-4">
+                    <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                    <p className="text-gray-500 text-sm">Loading assessments...</p>
+                  </div>
+                ) : assessments.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 text-sm">No assessments available</p>
+                    <p className="text-xs text-gray-400 mt-1">Debug: {assessments.length} assessments loaded</p>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-4">
+                <Link to="/student-exams">
+                  <Button variant="outline" className="w-full">
+                    View All Assessments
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
@@ -163,7 +421,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Your AI-Powered Learning Path</CardTitle>
                   <Badge className="gradient-primary text-white">
-                    {user.educationStream} 2024
+                    {user?.educationStream || 'JEE'} 2024
                   </Badge>
                 </div>
               </CardHeader>
@@ -224,7 +482,7 @@ export default function Dashboard() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {recommendedVideos.slice(0, 2).map((video: any) => (
-                    <div key={video.id} className="video-thumbnail">
+                    <div key={video.id} className="video-thumbnail group">
                       <img 
                         src={video.thumbnailUrl || "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450"} 
                         alt={video.title}
@@ -259,41 +517,68 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            {/* Practice Tests */}
+            {/* Weekend Exams */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Practice Tests & Assessments</CardTitle>
-                  <Link href="/tests">
+                  <CardTitle>Weekend Exams & JEE Tests</CardTitle>
+                  <Link href="/student-exams">
                     <Button variant="ghost" size="sm">View All</Button>
                   </Link>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {availableTests.slice(0, 2).map((test: any) => (
-                  <div key={test.id} className="test-card">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
-                          <FileText className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900">{test.title}</h3>
-                          <p className="text-sm text-gray-600">
-                            {test.totalQuestions} Questions • {Math.floor(test.duration / 3600)} Hours • {test.subjectIds?.length} Subjects
-                          </p>
-                          <div className="flex items-center space-x-4 mt-1">
-                            <Badge className="text-xs">New</Badge>
-                            <span className="text-xs text-gray-500">Attempted by 24,567 students</span>
-                          </div>
+                {/* JEE Main Practice Test */}
+                <div className="test-card">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">JEE Main Practice Test</h3>
+                        <p className="text-sm text-gray-600">
+                          90 Questions • 3 Hours • Maths, Physics, Chemistry
+                        </p>
+                        <div className="flex items-center space-x-4 mt-1">
+                          <Badge className="text-xs bg-blue-100 text-blue-700">MAINS</Badge>
+                          <span className="text-xs text-gray-500">+4/-1 Marking</span>
                         </div>
                       </div>
+                    </div>
+                    <Link href="/student-exams">
                       <Button className="bg-primary text-white hover:bg-primary/90">
                         Start Test
                       </Button>
-                    </div>
+                    </Link>
                   </div>
-                ))}
+                </div>
+
+                {/* JEE Advanced Practice Test */}
+                <div className="test-card">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 gradient-accent rounded-lg flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">JEE Advanced Practice Test</h3>
+                        <p className="text-sm text-gray-600">
+                          54 Questions • 3 Hours • Maths, Physics, Chemistry
+                        </p>
+                        <div className="flex items-center space-x-4 mt-1">
+                          <Badge className="text-xs bg-purple-100 text-purple-700">ADVANCED</Badge>
+                          <span className="text-xs text-gray-500">+3/-1 Marking</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/student-exams">
+                      <Button className="bg-primary text-white hover:bg-primary/90">
+                        Start Test
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
 
                 {/* Daily Quiz */}
                 <div className="p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-100">
@@ -402,6 +687,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Video Modal */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={handleCloseVideoModal}
+        video={selectedVideo}
+      />
     </>
   );
 }

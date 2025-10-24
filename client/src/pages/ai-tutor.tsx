@@ -110,7 +110,7 @@ export default function AITutor() {
   return (
     <>
       <Navigation />
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isMobile ? 'pb-20' : ''}`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 ${isMobile ? 'pb-20' : ''}`}>
         
         {/* Header */}
         <div className="mb-8">
@@ -130,7 +130,7 @@ export default function AITutor() {
           {user && (
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border border-blue-100">
               <h2 className="font-semibold text-gray-900 mb-2">
-                Welcome, {user.fullName.split(' ')[0]}!
+                Welcome, {user.fullName?.split(' ')[0] || 'Student'}!
               </h2>
               <p className="text-gray-700">
                 I'm here to help you with your {user.educationStream} preparation. 
@@ -140,7 +140,7 @@ export default function AITutor() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           
           {/* Main Chat Interface */}
           <div className="lg:col-span-2">
@@ -257,7 +257,10 @@ export default function AITutor() {
                     className="w-full justify-start text-left h-auto p-3 text-sm"
                     onClick={() => {
                       // This would trigger sending the question to the chat
+                      // For now, we'll just log it - in a real implementation, 
+                      // this would send the question to the AI chat
                       console.log("Quick question:", question);
+                      // TODO: Implement sending quick questions to chat
                     }}
                   >
                     {question}
