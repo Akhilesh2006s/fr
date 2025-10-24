@@ -47,6 +47,13 @@ const Login = () => {
 
       if (response.ok) {
         console.log('Login successful, user role:', data.user.role);
+        
+        // Store JWT token in localStorage
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('JWT token stored in localStorage');
+        }
+        
         // Redirect based on user role
         if (data.user.role === 'admin') {
           console.log('Redirecting to admin dashboard');
