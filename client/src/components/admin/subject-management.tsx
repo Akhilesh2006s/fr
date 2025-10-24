@@ -1,0 +1,530 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  BookOpen, 
+  Plus, 
+  Search, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Users,
+  GraduationCap,
+  CheckCircle,
+  XCircle,
+  Filter,
+  Hash
+} from 'lucide-react';
+
+interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  teacher?: {
+    id: string;
+    fullName: string;
+    email: string;
+  };
+  grade?: string;
+  department?: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface Teacher {
+  id: string;
+  fullName: string;
+  email: string;
+}
+
+const SubjectManagement = () => {
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [newSubject, setNewSubject] = useState({
+    name: '',
+    code: '',
+    description: '',
+    teacher: '',
+    grade: '',
+    department: ''
+  });
+
+  useEffect(() => {
+    fetchSubjects();
+    fetchTeachers();
+  }, []);
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await fetch('/api/admin/subjects', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setSubjects(data);
+    } catch (error) {
+      console.error('Failed to fetch subjects:', error);
+      // Set mock data for development
+      setSubjects([
+        {
+          id: '1',
+          name: 'Calculus',
+          code: 'MATH101',
+          description: 'Advanced Calculus and Differential Equations',
+          teacher: {
+            id: '1',
+            fullName: 'Dr. Sarah Johnson',
+            email: 'sarah.johnson@school.edu'
+          },
+          grade: '12',
+          department: 'Mathematics',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          name: 'Physics',
+          code: 'PHYS101',
+          description: 'Classical Mechanics and Thermodynamics',
+          teacher: {
+            id: '2',
+            fullName: 'Prof. Michael Brown',
+            email: 'michael.brown@school.edu'
+          },
+          grade: '11',
+          department: 'Physics',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        }
+      ]);
+    }
+  };
+
+  const fetchTeachers = async () => {
+    try {
+      const response = await fetch('/api/admin/teachers', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setTeachers(data);
+    } catch (error) {
+      console.error('Failed to fetch teachers:', error);
+      setTeachers([
+        { id: '1', fullName: 'Dr. Sarah Johnson', email: 'sarah.johnson@school.edu' },
+        { id: '2', fullName: 'Prof. Michael Brown', email: 'michael.brown@school.edu' }
+      ]);
+    }
+  };
+
+  const handleAddSubject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/admin/subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(newSubject)
+      });
+
+      if (response.ok) {
+        setNewSubject({ name: '', code: '', description: '', teacher: '', grade: '', department: '' });
+        setIsAddDialogOpen(false);
+        fetchSubjects();
+        alert('Subject added successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to add subject: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to add subject:', error);
+      alert('Failed to add subject. Please try again.');
+    }
+  };
+
+  const handleEditSubject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSubject) return;
+
+    try {
+      const response = await fetch(`/api/admin/subjects/${editingSubject.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(editingSubject)
+      });
+
+      if (response.ok) {
+        setEditingSubject(null);
+        setIsEditDialogOpen(false);
+        fetchSubjects();
+        alert('Subject updated successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to update subject: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to update subject:', error);
+      alert('Failed to update subject. Please try again.');
+    }
+  };
+
+  const handleDeleteSubject = async (subjectId: string, subjectName: string) => {
+    if (window.confirm(`Are you sure you want to delete ${subjectName}? This action cannot be undone.`)) {
+      try {
+        const response = await fetch(`/api/admin/subjects/${subjectId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          fetchSubjects();
+          alert(`${subjectName} has been deleted successfully.`);
+        } else {
+          const errorData = await response.json();
+          alert(`Failed to delete subject: ${errorData.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('Failed to delete subject:', error);
+        alert('Failed to delete subject. Please try again.');
+      }
+    }
+  };
+
+  const filteredSubjects = subjects.filter(subject =>
+    subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    subject.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    subject.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    subject.teacher?.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalSubjects = subjects.length;
+  const activeSubjects = subjects.filter(s => s.isActive).length;
+  const assignedSubjects = subjects.filter(s => s.teacher).length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50">
+      <div className="space-y-8 p-6">
+        {/* Hero Section with Subject Stats */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-400 opacity-30 rounded-3xl"></div>
+          <div className="relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-sky-200">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-4xl font-bold text-sky-900">
+                  Subject Management
+                </h1>
+                <p className="text-sky-800 mt-2 text-lg">Manage subjects and assign them to teachers</p>
+              </div>
+            </div>
+
+            {/* Subject Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
+                      <BookOpen className="w-6 h-6 text-sky-600" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sky-700 text-sm font-medium">Total Subjects</p>
+                      <p className="text-3xl font-bold text-sky-900">{totalSubjects}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-sky-700 text-sm">
+                    <BookOpen className="w-4 h-4 mr-1" />
+                    <span>Available courses</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-green-700 text-sm font-medium">Active Subjects</p>
+                      <p className="text-3xl font-bold text-green-900">{activeSubjects}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-green-700 text-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                    <span>Currently offered</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
+                      <Users className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-purple-700 text-sm font-medium">Assigned Subjects</p>
+                      <p className="text-3xl font-bold text-purple-900">{assignedSubjects}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-purple-700 text-sm">
+                    <Users className="w-4 h-4 mr-1" />
+                    <span>With teachers</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white/40 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-sky-200">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sky-600 w-4 h-4" />
+              <Input
+                placeholder="Search subjects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-64 border-sky-200 focus:border-sky-400"
+              />
+            </div>
+            <Button variant="outline" className="border-sky-200 text-sky-700 hover:bg-sky-50">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+          </div>
+          
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Subject
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-white/90 border-sky-200 backdrop-blur-xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold text-sky-900">Add New Subject</DialogTitle>
+                <DialogDescription className="text-sky-700">
+                  Create a new subject and assign it to a teacher.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleAddSubject} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name" className="text-sky-700">Subject Name</Label>
+                    <Input
+                      id="name"
+                      value={newSubject.name}
+                      onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
+                      className="border-sky-200 focus:border-sky-400"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="code" className="text-sky-700">Subject Code</Label>
+                    <Input
+                      id="code"
+                      value={newSubject.code}
+                      onChange={(e) => setNewSubject({ ...newSubject, code: e.target.value.toUpperCase() })}
+                      className="border-sky-200 focus:border-sky-400"
+                      placeholder="e.g., MATH101"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="grade" className="text-sky-700">Grade Level</Label>
+                    <Input
+                      id="grade"
+                      value={newSubject.grade}
+                      onChange={(e) => setNewSubject({ ...newSubject, grade: e.target.value })}
+                      className="border-sky-200 focus:border-sky-400"
+                      placeholder="e.g., 12"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="department" className="text-sky-700">Department</Label>
+                    <Input
+                      id="department"
+                      value={newSubject.department}
+                      onChange={(e) => setNewSubject({ ...newSubject, department: e.target.value })}
+                      className="border-sky-200 focus:border-sky-400"
+                      placeholder="e.g., Mathematics"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="description" className="text-sky-700">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newSubject.description}
+                    onChange={(e) => setNewSubject({ ...newSubject, description: e.target.value })}
+                    className="border-sky-200 focus:border-sky-400"
+                    rows={3}
+                    placeholder="Brief description of the subject..."
+                  />
+                </div>
+                <div>
+                  <Label className="text-sky-700">Assign Teacher</Label>
+                  <Select onValueChange={(value) => setNewSubject({ ...newSubject, teacher: value })}>
+                    <SelectTrigger className="border-sky-200 focus:border-sky-400">
+                      <SelectValue placeholder="Select a teacher (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teachers.map(teacher => (
+                        <SelectItem key={teacher.id} value={teacher.id}>
+                          {teacher.fullName} ({teacher.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700">
+                    Add Subject
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Subjects Table */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-sky-200 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-sky-50/50">
+                <TableHead className="text-sky-900 font-semibold">Subject</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Code</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Teacher</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Department</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Grade</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Status</TableHead>
+                <TableHead className="text-sky-900 font-semibold">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredSubjects.map((subject, index) => (
+                <TableRow key={subject.id || `subject-${index}`} className="hover:bg-sky-50/30">
+                  <TableCell>
+                    <div>
+                      <div className="font-medium text-sky-900">{subject.name}</div>
+                      {subject.description && (
+                        <div className="text-sm text-sky-600 mt-1">{subject.description}</div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="border-sky-200 text-sky-700">
+                      <Hash className="w-3 h-3 mr-1" />
+                      {subject.code}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {subject.teacher ? (
+                      <div>
+                        <div className="font-medium text-sky-900">{subject.teacher.fullName}</div>
+                        <div className="text-sm text-sky-600">{subject.teacher.email}</div>
+                      </div>
+                    ) : (
+                      <span className="text-sky-500 text-sm">Unassigned</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sky-700">{subject.department || 'N/A'}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sky-700">{subject.grade || 'N/A'}</span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={`${subject.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {subject.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Button size="sm" variant="outline" className="border-sky-200 text-sky-700 hover:bg-sky-50">
+                        <Eye className="w-3 h-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-sky-200 text-sky-700 hover:bg-sky-50"
+                        onClick={() => {
+                          setEditingSubject(subject);
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-red-200 text-red-700 hover:bg-red-50"
+                        onClick={() => handleDeleteSubject(subject.id, subject.name)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {filteredSubjects.length === 0 && (
+          <div className="text-center py-12">
+            <BookOpen className="w-16 h-16 text-sky-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-sky-700 mb-2">No subjects found</h3>
+            <p className="text-sky-600">Try adjusting your search criteria or add a new subject.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SubjectManagement;
