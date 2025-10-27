@@ -84,8 +84,11 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
   const { data: exam, isLoading } = useQuery({
     queryKey: ['/api/student/exams', examId],
     queryFn: async () => {
-      const response = await fetch(`/api/student/exams/${examId}`, {
-        credentials: 'include'
+      const response = await fetch(`http://localhost:3001/api/student/exams/${examId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json'
+        }
       });
       if (!response.ok) throw new Error('Failed to fetch exam');
       const examData = await response.json();
