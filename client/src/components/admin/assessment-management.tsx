@@ -83,7 +83,7 @@ const AssessmentManagement = () => {
   const fetchSubjects = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/subjects', {
+      const response = await fetch('http://localhost:3001/api/subjects', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -101,67 +101,18 @@ const AssessmentManagement = () => {
   const fetchAssessments = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
+      const response = await fetch('http://localhost:3001/api/admin/assessments', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
       if (response.ok) {
-      const data = await response.json();
-      setAssessments(data);
+        const data = await response.json();
+        setAssessments(data.data || data);
       } else {
-        // Mock data for development
-        setAssessments([
-          {
-            id: '1',
-            title: 'Mathematics Midterm Exam',
-            description: 'Comprehensive mathematics assessment covering algebra and geometry',
-            subject: 'Mathematics',
-            type: 'exam',
-            difficulty: 'medium',
-            duration: 120,
-            totalMarks: 100,
-            passingMarks: 60,
-            questions: 30,
-            isActive: true,
-            attempts: 45,
-            createdAt: '2024-01-15',
-            updatedAt: '2024-01-15'
-          },
-          {
-            id: '2',
-            title: 'Physics Lab Assignment',
-            description: 'Practical physics experiments and calculations',
-            subject: 'Physics',
-            type: 'assignment',
-            difficulty: 'hard',
-            duration: 180,
-            totalMarks: 150,
-            passingMarks: 90,
-            questions: 15,
-            isActive: true,
-            attempts: 28,
-            createdAt: '2024-01-14',
-            updatedAt: '2024-01-14'
-          },
-          {
-            id: '3',
-            title: 'English Grammar Quiz',
-            description: 'Basic grammar rules and sentence structure',
-            subject: 'English',
-            type: 'quiz',
-            difficulty: 'easy',
-            duration: 30,
-            totalMarks: 50,
-            passingMarks: 30,
-            questions: 25,
-            isActive: false,
-            attempts: 67,
-            createdAt: '2024-01-13',
-            updatedAt: '2024-01-13'
-          }
-        ]);
+        console.error('Failed to fetch assessments:', response.status);
+        setAssessments([]);
       }
     } catch (error) {
       console.error('Failed to fetch assessments:', error);
@@ -173,7 +124,7 @@ const AssessmentManagement = () => {
   const handleCreateAssessment = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
+      const response = await fetch('http://localhost:3001/api/admin/assessments', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'https://asli-stud-back-production.up.railway.app';
+export const API_BASE_URL = 'http://localhost:3001';
 
 // Helper function to make API calls
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {

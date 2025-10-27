@@ -60,3 +60,6 @@ const YouTubePlayer = ({ videoUrl, title, className = '' }: YouTubePlayerProps) 
 
 export default YouTubePlayer;
 
+
+
+

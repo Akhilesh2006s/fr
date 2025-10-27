@@ -27,14 +27,14 @@ const Login = () => {
     try {
       // Test backend connection first
       console.log('Testing backend connection...');
-      const healthCheck = await fetch('https://asli-stud-back-production.up.railway.app/api/health');
+      const healthCheck = await fetch('http://localhost:3001/api/health');
       if (!healthCheck.ok) {
         throw new Error('Backend server is not running. Please check the server status.');
       }
       console.log('Backend server is running');
 
       // Use direct backend URL for production
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,10 @@ const Login = () => {
         }
         
         // Redirect based on user role
-        if (data.user.role === 'admin') {
+        if (data.user.role === 'super-admin') {
+          console.log('Redirecting to super admin dashboard');
+          setLocation('/super-admin/dashboard');
+        } else if (data.user.role === 'admin') {
           console.log('Redirecting to admin dashboard');
           setLocation('/admin/dashboard');
         } else if (data.user.role === 'teacher') {

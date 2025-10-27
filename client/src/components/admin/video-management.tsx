@@ -75,7 +75,13 @@ const VideoManagement = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await fetch('/api/subjects');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/subjects', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setSubjects(data.subjects || []);
@@ -87,56 +93,23 @@ const VideoManagement = () => {
 
   const fetchVideos = async () => {
     try {
-      const response = await fetch('/api/videos');
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/videos', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
-        setVideos(data);
+        setVideos(data.data || data);
       } else {
-        // Mock data for development
-        setVideos([
-          {
-            id: '1',
-            title: 'Introduction to Algebra',
-            description: 'Basic algebraic concepts and problem solving techniques',
-            subject: 'Mathematics',
-            duration: 45,
-            thumbnail: '/api/placeholder/300/200',
-            videoUrl: 'https://example.com/video1.mp4',
-            isActive: true,
-            views: 1250,
-            createdAt: '2024-01-15',
-            updatedAt: '2024-01-15'
-          },
-          {
-            id: '2',
-            title: 'Physics: Newton\'s Laws',
-            description: 'Understanding the fundamental laws of motion',
-            subject: 'Physics',
-            duration: 60,
-            thumbnail: '/api/placeholder/300/200',
-            videoUrl: 'https://example.com/video2.mp4',
-            isActive: true,
-            views: 890,
-            createdAt: '2024-01-14',
-            updatedAt: '2024-01-14'
-          },
-          {
-            id: '3',
-            title: 'English Grammar Basics',
-            description: 'Essential grammar rules and usage',
-            subject: 'English',
-            duration: 35,
-            thumbnail: '/api/placeholder/300/200',
-            videoUrl: 'https://example.com/video3.mp4',
-            isActive: false,
-            views: 2100,
-            createdAt: '2024-01-13',
-            updatedAt: '2024-01-13'
-          }
-        ]);
+        console.error('Failed to fetch videos:', response.status);
+        setVideos([]);
       }
     } catch (error) {
       console.error('Failed to fetch videos:', error);
+      setVideos([]);
     } finally {
       setLoading(false);
     }
@@ -144,29 +117,18 @@ const VideoManagement = () => {
 
   const handleCreateVideo = async () => {
     try {
-      const response = await fetch('/api/videos', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/videos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(newVideo),
       });
 
       if (response.ok) {
-        const createdVideo = await response.json();
-        setVideos([...videos, createdVideo]);
-        
-        // Add video to the selected subject
-        if (newVideo.subjectId) {
-          await fetch(`/api/subjects/${newVideo.subjectId}/videos`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ videoId: createdVideo._id || createdVideo.id }),
-          });
-        }
-        
+        await fetchVideos();
         setIsCreateDialogOpen(false);
         setNewVideo({
           title: '',
@@ -187,17 +149,18 @@ const VideoManagement = () => {
 
   const handleEditVideo = async (video: Video) => {
     try {
-      const response = await fetch(`/api/videos/${video.id}`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/videos/${video.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(video),
       });
 
       if (response.ok) {
-        const updatedVideo = await response.json();
-        setVideos(videos.map(v => v.id === video.id ? updatedVideo : v));
+        await fetchVideos();
         setIsEditDialogOpen(false);
         setEditingVideo(null);
       }
@@ -209,12 +172,16 @@ const VideoManagement = () => {
   const handleDeleteVideo = async (videoId: string) => {
     if (confirm('Are you sure you want to delete this video?')) {
       try {
-        const response = await fetch(`/api/videos/${videoId}`, {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`http://localhost:3001/api/admin/videos/${videoId}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
 
         if (response.ok) {
-          setVideos(videos.filter(v => v.id !== videoId));
+          await fetchVideos();
         }
       } catch (error) {
         console.error('Failed to delete video:', error);
@@ -224,17 +191,18 @@ const VideoManagement = () => {
 
   const toggleVideoStatus = async (video: Video) => {
     try {
-      const response = await fetch(`/api/videos/${video.id}/toggle`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/videos/${video.id}/toggle`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ isActive: !video.isActive }),
       });
 
       if (response.ok) {
-        const updatedVideo = await response.json();
-        setVideos(videos.map(v => v.id === video.id ? updatedVideo : v));
+        await fetchVideos();
       }
     } catch (error) {
       console.error('Failed to toggle video status:', error);

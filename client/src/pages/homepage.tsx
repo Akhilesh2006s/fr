@@ -48,6 +48,7 @@ import {
   MapPin,
   Calendar,
   DollarSign,
+  Crown,
   Percent,
   Plus,
   Check,
@@ -97,7 +98,6 @@ import {
   Ambulance,
   Fire,
   Police,
-  Crown,
   Gem,
   Diamond,
   Sun,
@@ -841,6 +841,27 @@ const Homepage = () => {
                       Sign In
                       <Eye className="ml-2 w-5 h-5" />
                     </motion.div>
+                  </Button>
+                </Link>
+              </motion.div>
+            </div>
+            
+            {/* Super Admin Access */}
+            <div className="mt-8 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.7 }}
+              >
+                <Link href="/super-admin/login">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-red-300 text-red-200 hover:bg-red-500/20 hover:text-red-100 backdrop-blur-sm"
+                  >
+                    <Crown className="w-4 h-4 mr-2" />
+                    Super Admin Access
                   </Button>
                 </Link>
               </motion.div>

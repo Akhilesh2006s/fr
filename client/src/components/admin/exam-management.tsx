@@ -101,7 +101,7 @@ const ExamManagement = () => {
     try {
       // Check if user is authenticated
       const token = localStorage.getItem('authToken');
-      const authResponse = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
+      const authResponse = await fetch('http://localhost:3001/api/auth/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ const ExamManagement = () => {
   const fetchExams = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/exams', {
+      const response = await fetch('http://localhost:3001/api/admin/exams', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -140,7 +140,10 @@ const ExamManagement = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setExams(data);
+        setExams(data.data || data || []);
+      } else {
+        console.error('Failed to fetch exams:', response.status);
+        setExams([]);
       }
     } catch (error) {
       console.error('Failed to fetch exams:', error);
@@ -152,14 +155,18 @@ const ExamManagement = () => {
   const fetchQuestions = async (examId: string) => {
     try {
       console.log('Fetching questions for exam ID:', examId);
-      const response = await fetch(`/api/admin/exams/${examId}/questions`, {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/exams/${examId}/questions`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       console.log('Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
         console.log('Questions data:', data);
-        setQuestions(data);
+        setQuestions(data.data || data); // Handle both response formats
       } else if (response.status === 401) {
         console.error('Unauthorized - redirecting to login');
         alert('Session expired. Please login again.');
@@ -177,10 +184,13 @@ const ExamManagement = () => {
 
   const handleCreateExam = async () => {
     try {
-      const response = await fetch('/api/admin/exams', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/exams', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(examForm)
       });
 
@@ -198,10 +208,13 @@ const ExamManagement = () => {
     if (!editingExam) return;
 
     try {
-      const response = await fetch(`/api/admin/exams/${editingExam._id}`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/exams/${editingExam._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(examForm)
       });
 
@@ -220,9 +233,12 @@ const ExamManagement = () => {
     if (!confirm('Are you sure you want to delete this exam?')) return;
 
     try {
-      const response = await fetch(`/api/admin/exams/${examId}`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/exams/${examId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
@@ -264,13 +280,14 @@ const ExamManagement = () => {
       console.log('Creating question for exam:', selectedExam._id);
       console.log('Question data:', questionData);
       
-      const response = await fetch(`/api/admin/exams/${selectedExam._id}/questions`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/exams/${selectedExam._id}/questions`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        credentials: 'include',
         body: JSON.stringify(questionData)
       });
 
@@ -308,10 +325,13 @@ const ExamManagement = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/questions/${editingQuestion._id}`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/questions/${editingQuestion._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(questionForm)
       });
 
@@ -330,9 +350,12 @@ const ExamManagement = () => {
     if (!confirm('Are you sure you want to delete this question?')) return;
 
     try {
-      const response = await fetch(`/api/admin/questions/${questionId}`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:3001/api/admin/questions/${questionId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.ok && selectedExam) {
@@ -348,9 +371,12 @@ const ExamManagement = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch('/api/admin/upload-question-image', {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/upload-question-image', {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 
@@ -488,7 +514,7 @@ const ExamManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Exams</p>
-                <p className="text-2xl font-bold text-gray-900">{exams.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{Array.isArray(exams) ? exams.length : 0}</p>
               </div>
               <BookOpen className="w-8 h-8 text-blue-600" />
             </div>
@@ -501,7 +527,7 @@ const ExamManagement = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Exams</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {exams.filter(exam => exam.isActive).length}
+                  {Array.isArray(exams) ? exams.filter(exam => exam.isActive).length : 0}
                 </p>
               </div>
               <Calendar className="w-8 h-8 text-green-600" />
@@ -515,7 +541,7 @@ const ExamManagement = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Questions</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {exams.reduce((total, exam) => total + exam.questions.length, 0)}
+                  {Array.isArray(exams) ? exams.reduce((total, exam) => total + (exam.questions?.length || 0), 0) : 0}
                 </p>
               </div>
               <Users className="w-8 h-8 text-purple-600" />
@@ -529,7 +555,7 @@ const ExamManagement = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Marks</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {exams.reduce((total, exam) => total + exam.totalMarks, 0)}
+                  {Array.isArray(exams) ? exams.reduce((total, exam) => total + (exam.totalMarks || 0), 0) : 0}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-orange-600" />
@@ -574,7 +600,7 @@ const ExamManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {exams.map((exam) => (
+                  {Array.isArray(exams) ? exams.map((exam) => (
                     <TableRow key={exam._id}>
                       <TableCell className="font-medium">{exam.title}</TableCell>
                       <TableCell>
@@ -627,7 +653,13 @@ const ExamManagement = () => {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                        No exams found
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -738,23 +770,23 @@ const ExamManagement = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {questions.map((question) => (
-                      <TableRow key={question._id}>
+                    {questions && questions.length > 0 ? questions.map((question) => (
+                      <TableRow key={question._id || question.id || Math.random()}>
                         <TableCell className="max-w-xs truncate">
-                          {question.questionText}
+                          {question.questionText || 'No question text'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{question.questionType}</Badge>
+                          <Badge variant="outline">{question.questionType || 'Unknown'}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant={
                             question.subject === 'maths' ? 'default' :
                             question.subject === 'physics' ? 'secondary' : 'destructive'
                           }>
-                            {question.subject.charAt(0).toUpperCase() + question.subject.slice(1)}
+                            {question.subject ? question.subject.charAt(0).toUpperCase() + question.subject.slice(1) : 'Unknown'}
                           </Badge>
                         </TableCell>
-                        <TableCell>{question.marks}</TableCell>
+                        <TableCell>{question.marks || 0}</TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
                             <Button
@@ -767,14 +799,20 @@ const ExamManagement = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleDeleteQuestion(question._id)}
+                              onClick={() => handleDeleteQuestion(question._id || question.id)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                          No questions found for this exam
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               ) : (

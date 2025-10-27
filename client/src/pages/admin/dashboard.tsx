@@ -57,7 +57,7 @@ const AdminDashboard = () => {
           return;
         }
 
-        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
+        const response = await fetch('http://localhost:3001/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -93,6 +93,7 @@ const AdminDashboard = () => {
   }, []);
   const [stats, setStats] = useState({
     totalStudents: 150,
+    totalTeachers: 0,
     totalClasses: 8,
     activeUsers: 45,
     recentActivity: [
@@ -133,33 +134,56 @@ const AdminDashboard = () => {
         return;
       }
 
-      const [videosRes, pathsRes, assessmentsRes, usersRes] = await Promise.all([
-        fetch('https://asli-stud-back-production.up.railway.app/api/videos', {
+      // Get admin info first
+      const adminRes = await fetch('http://localhost:3001/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (!adminRes.ok) {
+        console.log('Failed to get admin info');
+        return;
+      }
+      
+      const adminData = await adminRes.json();
+      const adminId = adminData.user.id;
+      console.log('Admin ID for data fetching:', adminId);
+
+      // Fetch admin-specific data using admin endpoints
+      const [studentsRes, teachersRes, videosRes, assessmentsRes] = await Promise.all([
+        fetch('http://localhost:3001/api/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://asli-stud-back-production.up.railway.app/api/learning-paths', {
+        fetch('http://localhost:3001/api/admin/teachers', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
+        fetch('http://localhost:3001/api/videos', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
+        fetch('http://localhost:3001/api/assessments', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
 
-      const videos = await videosRes.json();
-      const paths = await pathsRes.json();
-      const assessments = await assessmentsRes.json();
-      const users = await usersRes.json();
+      const students = studentsRes.ok ? await studentsRes.json() : [];
+      const teachers = teachersRes.ok ? await teachersRes.json() : [];
+      const videos = videosRes.ok ? await videosRes.json() : [];
+      const assessments = assessmentsRes.ok ? await assessmentsRes.json() : [];
+
+      console.log('Admin-specific data:', {
+        students: students.length || 0,
+        teachers: teachers.length || 0,
+        videos: videos.length || 0,
+        assessments: assessments.length || 0
+      });
 
       setStats({
-        totalStudents: users.length,
+        totalStudents: students.length || 0,
+        totalTeachers: teachers.length || 0,
         totalClasses: 8,
-        totalVideos: videos.length,
+        totalVideos: videos.length || 0,
         totalQuizzes: 25,
-        totalAssessments: assessments.length,
-        activeUsers: Math.floor(users.length * 0.8),
+        totalAssessments: assessments.length || 0,
+        activeUsers: Math.floor((students.length || 0) * 0.8),
         recentActivity: [
           { id: 1, action: 'New video uploaded', user: 'John Doe', time: '2 hours ago', type: 'video' },
           { id: 2, action: 'Learning path created', user: 'Jane Smith', time: '4 hours ago', type: 'path' },
@@ -448,6 +472,49 @@ const AdminDashboard = () => {
                     </div>
                     <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                       <Activity className="w-6 h-6 text-indigo-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Admin-Specific Data Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-blue-900">
+                    <Users className="w-5 h-5" />
+                    <span>Your Students</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-blue-700">Total Students Assigned</span>
+                      <span className="text-2xl font-bold text-blue-900">{stats.totalStudents}</span>
+                    </div>
+                    <div className="text-xs text-blue-600">
+                      These are the students specifically assigned to your admin account
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-purple-900">
+                    <GraduationCap className="w-5 h-5" />
+                    <span>Your Teachers</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-purple-700">Total Teachers Assigned</span>
+                      <span className="text-2xl font-bold text-purple-900">{stats.totalTeachers || 0}</span>
+                    </div>
+                    <div className="text-xs text-purple-600">
+                      These are the teachers specifically assigned to your admin account
                     </div>
                   </div>
                 </CardContent>

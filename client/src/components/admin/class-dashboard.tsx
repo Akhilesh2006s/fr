@@ -73,8 +73,12 @@ const ClassDashboard = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await fetch('/api/admin/users', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -140,8 +144,12 @@ const ClassDashboard = () => {
 
   const fetchClasses = async () => {
     try {
-      const response = await fetch('/api/admin/classes', {
-        credentials: 'include'
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:3001/api/admin/classes', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {

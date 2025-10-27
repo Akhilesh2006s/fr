@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { BellIcon, LogOutIcon, UsersIcon, TrendingUpIcon, BookIcon, Presentation, UserPlusIcon, BookPlusIcon, SettingsIcon, DownloadIcon, HomeIcon, CrownIcon, BarChart3Icon, CreditCardIcon, ArrowUpRightIcon, ArrowDownRightIcon, StarIcon, TargetIcon, BrainIcon, ZapIcon, AlertTriangleIcon, TrendingDownIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-type SuperAdminView = 'dashboard' | 'admins' | 'users' | 'content' | 'analytics' | 'subscriptions' | 'settings';
+type SuperAdminView = 'dashboard' | 'admins' | 'analytics' | 'subscriptions' | 'settings';
 
 export default function SuperAdminDashboard() {
   const { toast } = useToast();
@@ -16,9 +16,17 @@ export default function SuperAdminDashboard() {
   const [user] = useState({ fullName: 'Super Admin', role: 'super-admin' });
   const [stats, setStats] = useState({
     totalUsers: 0,
-    revenue: 0,
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalAdmins: 0,
     courses: 0,
-    admins: 0
+    assessments: 0,
+    exams: 0,
+    examResults: 0,
+    activeVideos: 0,
+    activeAssessments: 0,
+    avgExamsPerStudent: 0,
+    contentEngagement: 0
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
@@ -86,10 +94,10 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="mt-4">
               <button 
-                onClick={() => setCurrentView('users')} 
+                onClick={() => setCurrentView('admins')} 
                 className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
               >
-                Click to manage users <ArrowUpRightIcon className="ml-1 h-4 w-4" />
+                Click to manage admins <ArrowUpRightIcon className="ml-1 h-4 w-4" />
               </button>
             </div>
           </CardContent>
@@ -99,16 +107,19 @@ export default function SuperAdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Revenue</p>
-                <p className="text-3xl font-bold text-green-900">₹{isLoadingStats ? '...' : stats.revenue.toLocaleString()}</p>
-                <p className="text-sm text-green-600">Real-time data</p>
+                <p className="text-sm font-medium text-green-600">Exam Results</p>
+                <p className="text-3xl font-bold text-green-900">{isLoadingStats ? '...' : stats.examResults}</p>
+                <p className="text-sm text-green-600">Total completed</p>
               </div>
               <TrendingUpIcon className="h-12 w-12 text-green-500" />
             </div>
             <div className="mt-4">
-              <a href="#" className="text-sm text-green-600 hover:text-green-800 flex items-center">
+              <button 
+                onClick={() => setCurrentView('analytics')} 
+                className="text-sm text-green-600 hover:text-green-800 flex items-center"
+              >
                 Click for analytics <ArrowUpRightIcon className="ml-1 h-4 w-4" />
-              </a>
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -136,7 +147,7 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-yellow-600">Admins</p>
-                <p className="text-3xl font-bold text-yellow-900">{isLoadingStats ? '...' : stats.admins}</p>
+                <p className="text-3xl font-bold text-yellow-900">{isLoadingStats ? '...' : stats.totalAdmins}</p>
                 <p className="text-sm text-yellow-600">Real-time data</p>
               </div>
               <CrownIcon className="h-12 w-12 text-yellow-500" />
@@ -321,52 +332,6 @@ export default function SuperAdminDashboard() {
     <AdminManagement />
   );
 
-  const renderUsersContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">User Management</h2>
-        <Button>
-          <UserPlusIcon className="mr-2 h-4 w-4" />
-          Add New User
-        </Button>
-      </div>
-      
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center py-8">
-            <UsersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">User Management</h3>
-            <p className="text-gray-600 mb-4">Manage all users in the system</p>
-            <Button>View All Users</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderContentContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Content Management</h2>
-        <Button>
-          <BookPlusIcon className="mr-2 h-4 w-4" />
-          Create Course
-        </Button>
-      </div>
-      
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center py-8">
-            <BookIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Content Management</h3>
-            <p className="text-gray-600 mb-4">Manage courses, videos, and educational content</p>
-            <Button>View All Content</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
   const renderAnalyticsContent = () => (
     <SuperAdminAnalyticsDashboard />
   );
@@ -411,10 +376,6 @@ export default function SuperAdminDashboard() {
         return renderDashboardContent();
       case 'admins':
         return renderAdminsContent();
-      case 'users':
-        return renderUsersContent();
-      case 'content':
-        return renderContentContent();
       case 'analytics':
         return renderAnalyticsContent();
       case 'subscriptions':

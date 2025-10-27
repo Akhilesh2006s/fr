@@ -18,6 +18,9 @@ import SubjectManagement from "./pages/admin/subject-management";
 import TeacherDashboard from "./components/teacher-dashboard";
 import StudentExams from "./pages/student-exams";
 import SubjectContent from "./pages/subject-content";
+import SuperAdminLogin from "./pages/super-admin-login";
+import SuperAdminDashboard from "./pages/super-admin-dashboard";
+import SuperAdminTest from "./pages/super-admin-test";
 
 function Router() {
   return (
@@ -37,6 +40,9 @@ function Router() {
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/subjects" component={SubjectManagement} />
       <Route path="/teacher/dashboard" component={TeacherDashboard} />
+      <Route path="/super-admin/login" component={SuperAdminLogin} />
+      <Route path="/super-admin/dashboard" component={SuperAdminDashboard} />
+      <Route path="/super-admin/test" component={SuperAdminTest} />
       <Route component={NotFound} />
     </Switch>
   );
