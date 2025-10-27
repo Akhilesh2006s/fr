@@ -112,9 +112,16 @@ export default function VideoLectures() {
   const { data: videos = [], isLoading: videosLoading } = useQuery<VideoLecture[]>({
     queryKey: ["/api/student/videos"],
     queryFn: async () => {
-      const response = await fetch("/api/student/videos");
+      const token = localStorage.getItem('authToken');
+      const response = await fetch("http://localhost:3001/api/student/videos", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (!response.ok) throw new Error("Failed to fetch videos");
-      return response.json();
+      const data = await response.json();
+      return data.data || data;
     },
   });
 
