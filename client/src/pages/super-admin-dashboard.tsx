@@ -14,12 +14,51 @@ export default function SuperAdminDashboard() {
   const { toast } = useToast();
   const [currentView, setCurrentView] = useState<SuperAdminView>('dashboard');
   const [user] = useState({ fullName: 'Super Admin', role: 'super-admin' });
-  const [stats] = useState({
-    totalUsers: 1234,
-    revenue: 45231,
-    courses: 89,
-    admins: 23
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    revenue: 0,
+    courses: 0,
+    admins: 0
   });
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
+  // Fetch real dashboard stats
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('http://localhost:3001/api/super-admin/dashboard/stats', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data.data);
+        } else {
+          console.error('Failed to fetch dashboard stats:', response.status);
+          toast({
+            title: "Error",
+            description: "Failed to fetch dashboard statistics",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch dashboard statistics",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, [toast]);
 
   const handleLogout = () => {
     // Clear localStorage for Super Admin logout
@@ -38,15 +77,20 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-600">Total Users</p>
-                <p className="text-3xl font-bold text-blue-900">{stats.totalUsers.toLocaleString()}</p>
-                <p className="text-sm text-blue-600">+20.1% from last month</p>
+                <p className="text-3xl font-bold text-blue-900">
+                  {isLoadingStats ? '...' : stats.totalUsers.toLocaleString()}
+                </p>
+                <p className="text-sm text-blue-600">Real-time data</p>
               </div>
               <UsersIcon className="h-12 w-12 text-blue-500" />
             </div>
             <div className="mt-4">
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+              <button 
+                onClick={() => setCurrentView('users')} 
+                className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+              >
                 Click to manage users <ArrowUpRightIcon className="ml-1 h-4 w-4" />
-              </a>
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -56,8 +100,8 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-green-600">Revenue</p>
-                <p className="text-3xl font-bold text-green-900">₹{stats.revenue.toLocaleString()}</p>
-                <p className="text-sm text-green-600">+15.3% from last month</p>
+                <p className="text-3xl font-bold text-green-900">₹{isLoadingStats ? '...' : stats.revenue.toLocaleString()}</p>
+                <p className="text-sm text-green-600">Real-time data</p>
               </div>
               <TrendingUpIcon className="h-12 w-12 text-green-500" />
             </div>
@@ -74,8 +118,8 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-purple-600">Courses</p>
-                <p className="text-3xl font-bold text-purple-900">{stats.courses}</p>
-                <p className="text-sm text-purple-600">+3 new this week</p>
+                <p className="text-3xl font-bold text-purple-900">{isLoadingStats ? '...' : stats.courses}</p>
+                <p className="text-sm text-purple-600">Real-time data</p>
               </div>
               <BookIcon className="h-12 w-12 text-purple-500" />
             </div>
@@ -92,8 +136,8 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-yellow-600">Admins</p>
-                <p className="text-3xl font-bold text-yellow-900">{stats.admins}</p>
-                <p className="text-sm text-yellow-600">+2 new this month</p>
+                <p className="text-3xl font-bold text-yellow-900">{isLoadingStats ? '...' : stats.admins}</p>
+                <p className="text-sm text-yellow-600">Real-time data</p>
               </div>
               <CrownIcon className="h-12 w-12 text-yellow-500" />
             </div>
