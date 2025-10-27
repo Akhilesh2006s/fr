@@ -38,7 +38,7 @@ import {
   ArrowRightIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 interface AIInsight {
   id: string;
@@ -73,7 +73,7 @@ interface ContentRecommendation {
 
 export default function AIAnalyticsDashboard() {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
   const [studentPredictions, setStudentPredictions] = useState<StudentPrediction[]>([]);
   const [contentRecommendations, setContentRecommendations] = useState<ContentRecommendation[]>([]);
@@ -308,10 +308,10 @@ export default function AIAnalyticsDashboard() {
           <p className="text-gray-600 mt-2">Advanced machine learning insights and predictions</p>
         </div>
         <div className="flex space-x-3">
-          <Button 
-            onClick={() => navigate('/super-admin/detailed-analytics')}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          >
+                  <Button
+                    onClick={() => setLocation('/super-admin/detailed-analytics')}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
             <ChartBarIcon className="w-4 h-4 mr-2" />
             Detailed Analytics
             <ArrowRightIcon className="w-4 h-4 ml-2" />
