@@ -82,7 +82,9 @@ const SubjectManagement = () => {
       }
       
       const data = await response.json();
-      setSubjects(data);
+      // Handle different API response structures
+      const subjectsData = data.data || data.subjects || data || [];
+      setSubjects(Array.isArray(subjectsData) ? subjectsData : []);
     } catch (error) {
       console.error('Failed to fetch subjects:', error);
       // Set mock data for development
@@ -136,7 +138,9 @@ const SubjectManagement = () => {
       }
       
       const data = await response.json();
-      setTeachers(data);
+      // Handle different API response structures
+      const teachersData = data.data || data.teachers || data || [];
+      setTeachers(Array.isArray(teachersData) ? teachersData : []);
     } catch (error) {
       console.error('Failed to fetch teachers:', error);
       setTeachers([
@@ -223,16 +227,16 @@ const SubjectManagement = () => {
     }
   };
 
-  const filteredSubjects = subjects.filter(subject =>
+  const filteredSubjects = Array.isArray(subjects) ? subjects.filter(subject =>
     subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.teacher?.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
-  const totalSubjects = subjects.length;
-  const activeSubjects = subjects.filter(s => s.isActive).length;
-  const assignedSubjects = subjects.filter(s => s.teacher).length;
+  const totalSubjects = Array.isArray(subjects) ? subjects.length : 0;
+  const activeSubjects = Array.isArray(subjects) ? subjects.filter(s => s.isActive).length : 0;
+  const assignedSubjects = Array.isArray(subjects) ? subjects.filter(s => s.teacher).length : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50">
@@ -421,7 +425,7 @@ const SubjectManagement = () => {
                       <SelectValue placeholder="Select a teacher (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      {teachers.map(teacher => (
+                      {Array.isArray(teachers) && teachers.map(teacher => (
                         <SelectItem key={teacher.id} value={teacher.id}>
                           {teacher.fullName} ({teacher.email})
                         </SelectItem>
