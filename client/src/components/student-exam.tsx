@@ -158,7 +158,7 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < exam.questions.length - 1) {
+    if (exam.questions && Array.isArray(exam.questions) && currentQuestionIndex < exam.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -184,6 +184,14 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
       physics: { correct: 0, total: 0, marks: 0 },
       chemistry: { correct: 0, total: 0, marks: 0 }
     };
+
+    // Safety check for exam.questions
+    if (!exam.questions || !Array.isArray(exam.questions)) {
+      console.error('Exam questions are not available:', exam.questions);
+      setIsSubmitted(false);
+      alert('No questions found in this exam. Please try again.');
+      return;
+    }
 
     exam.questions.forEach((question: Question) => {
       const userAnswer = answers[question._id];
@@ -302,7 +310,7 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
 
   // Debug function to show correct answers
   const showCorrectAnswers = () => {
-    if (!exam || !exam.questions) return;
+    if (!exam || !exam.questions || !Array.isArray(exam.questions)) return;
     
     console.log('=== CORRECT ANSWERS FOR DEBUGGING ===');
     exam.questions.forEach((question, index) => {
