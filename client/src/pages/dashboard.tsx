@@ -119,14 +119,14 @@ export default function Dashboard() {
 
         if (videosRes.ok) {
           const videosData = await videosRes.json();
-          setVideos(videosData.slice(0, 3)); // Show first 3 videos
+          setVideos((videosData.data || videosData).slice(0, 3)); // Show first 3 videos
         }
 
         if (assessmentsRes.ok) {
           const assessmentsData = await assessmentsRes.json();
           console.log('Dashboard fetched assessments:', assessmentsData);
-          console.log('Number of assessments:', assessmentsData.length);
-          setAssessments(assessmentsData.slice(0, 3)); // Show first 3 assessments
+          console.log('Number of assessments:', (assessmentsData.data || assessmentsData).length);
+          setAssessments((assessmentsData.data || assessmentsData).slice(0, 3)); // Show first 3 assessments
           setAssessmentsLoading(false);
         } else {
           console.error('Failed to fetch assessments:', assessmentsRes.status);

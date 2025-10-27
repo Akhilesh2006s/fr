@@ -47,7 +47,7 @@ export default function LearningPaths() {
           return;
         }
 
-        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
+        const response = await fetch('http://localhost:3001/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -120,31 +120,34 @@ export default function LearningPaths() {
               subjectsData.subjects.map(async (subject: any) => {
                 try {
                   // Fetch videos for this subject (from teacher-created content)
-                  const videosResponse = await fetch(`/api/student/videos?subject=${subject.name}`, {
-                    credentials: 'include',
+                  const videosResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/videos?subject=${subject.name}`, {
                     headers: {
+                      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                       'Content-Type': 'application/json',
                     }
                   });
-                  const videos = videosResponse.ok ? await videosResponse.json() : [];
+                  const videosData = videosResponse.ok ? await videosResponse.json() : { data: [] };
+                  const videos = videosData.data || videosData;
 
                   // Fetch quizzes for this subject (from teacher-created content)
-                  const quizzesResponse = await fetch(`/api/student/quizzes?subject=${subject.name}`, {
-                    credentials: 'include',
+                  const quizzesResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${subject.name}`, {
                     headers: {
+                      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                       'Content-Type': 'application/json',
                     }
                   });
-                  const quizzes = quizzesResponse.ok ? await quizzesResponse.json() : [];
+                  const quizzesData = quizzesResponse.ok ? await quizzesResponse.json() : { data: [] };
+                  const quizzes = quizzesData.data || quizzesData;
 
                   // Fetch assessments for this subject (from teacher-created content)
-                  const assessmentsResponse = await fetch(`/api/student/assessments?subject=${subject.name}`, {
-                    credentials: 'include',
+                  const assessmentsResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${subject.name}`, {
                     headers: {
+                      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                       'Content-Type': 'application/json',
                     }
                   });
-                  const assessments = assessmentsResponse.ok ? await assessmentsResponse.json() : [];
+                  const assessmentsData = assessmentsResponse.ok ? await assessmentsResponse.json() : { data: [] };
+                  const assessments = assessmentsData.data || assessmentsData;
 
                   return {
                     ...subject,
