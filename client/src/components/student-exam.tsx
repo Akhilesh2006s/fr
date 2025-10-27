@@ -218,7 +218,7 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
 
     // Save result to backend
     try {
-      await fetch('https://asli-stud-back-production.up.railway.app/api/student/exam-results', {
+      await fetch('http://localhost:3001/api/student/exam-results', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
