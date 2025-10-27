@@ -68,7 +68,7 @@ export default function SuperAdminDashboard() {
   }, []);
 
   // API Base URL
-  const API_BASE = 'http://localhost:3001';
+  const API_BASE = 'https://asli-stud-back-production.up.railway.app';
 
   // Fetch stats from API
   const { data: stats, isLoading: statsLoading } = useQuery({

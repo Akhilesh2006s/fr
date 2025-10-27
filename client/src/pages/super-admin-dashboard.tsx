@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { SuperAdminSidebar } from "@/components/dashboard/SuperAdminSidebar";
 import AdminManagement from "@/components/admin/AdminManagement";
 import SuperAdminAnalyticsDashboard from "./super-admin-analytics";
+import AIAnalyticsDashboard from "./ai-analytics-dashboard";
+import DetailedAIAnalyticsDashboard from "./detailed-ai-analytics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BellIcon, LogOutIcon, UsersIcon, TrendingUpIcon, BookIcon, Presentation, UserPlusIcon, BookPlusIcon, SettingsIcon, DownloadIcon, HomeIcon, CrownIcon, BarChart3Icon, CreditCardIcon, ArrowUpRightIcon, ArrowDownRightIcon, StarIcon, TargetIcon, BrainIcon, ZapIcon, AlertTriangleIcon, TrendingDownIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-type SuperAdminView = 'dashboard' | 'admins' | 'analytics' | 'subscriptions' | 'settings';
+type SuperAdminView = 'dashboard' | 'admins' | 'analytics' | 'ai-analytics' | 'detailed-analytics' | 'subscriptions' | 'settings';
 
 export default function SuperAdminDashboard() {
   const { toast } = useToast();
@@ -35,7 +37,7 @@ export default function SuperAdminDashboard() {
     const fetchDashboardStats = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:3001/api/super-admin/dashboard/stats', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/super-admin/dashboard/stats', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -162,7 +164,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-blue-50 border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
@@ -191,15 +193,29 @@ export default function SuperAdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-purple-50 border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer">
+        <Card className="bg-purple-50 border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer" onClick={() => setCurrentView('ai-analytics')}>
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-purple-100 rounded-lg">
-                <DownloadIcon className="h-6 w-6 text-purple-600" />
+                <BrainIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-purple-900">Export Data</h3>
-                <p className="text-sm text-purple-600">Download platform analytics</p>
+                <h3 className="font-semibold text-purple-900">AI Analytics</h3>
+                <p className="text-sm text-purple-600">Advanced ML insights</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-orange-50 border-orange-200 hover:bg-orange-100 transition-colors cursor-pointer">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <DownloadIcon className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-orange-900">Export Data</h3>
+                <p className="text-sm text-orange-600">Download platform analytics</p>
               </div>
             </div>
           </CardContent>
@@ -378,6 +394,10 @@ export default function SuperAdminDashboard() {
         return renderAdminsContent();
       case 'analytics':
         return renderAnalyticsContent();
+      case 'ai-analytics':
+        return <AIAnalyticsDashboard />;
+      case 'detailed-analytics':
+        return <DetailedAIAnalyticsDashboard />;
       case 'subscriptions':
         return renderSubscriptionsContent();
       case 'settings':

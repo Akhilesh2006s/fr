@@ -7,11 +7,12 @@ import {
   SettingsIcon,
   CrownIcon,
   UserPlusIcon,
-  GraduationCapIcon
+  GraduationCapIcon,
+  BrainCircuitIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type SuperAdminView = 'dashboard' | 'admins' | 'analytics' | 'subscriptions' | 'settings';
+type SuperAdminView = 'dashboard' | 'admins' | 'analytics' | 'ai-analytics' | 'detailed-analytics' | 'subscriptions' | 'settings';
 
 interface SuperAdminSidebarProps {
   currentView: SuperAdminView;
@@ -24,6 +25,8 @@ export function SuperAdminSidebar({ currentView, onViewChange, user }: SuperAdmi
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3Icon },
     { id: 'admins', label: 'Admin Management', icon: CrownIcon },
     { id: 'analytics', label: 'Analytics', icon: BarChartIcon },
+    { id: 'ai-analytics', label: 'AI Analytics', icon: BrainCircuitIcon },
+    { id: 'detailed-analytics', label: 'Detailed Analytics', icon: BarChartIcon },
     { id: 'subscriptions', label: 'Subscriptions', icon: CreditCardIcon },
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
   ];

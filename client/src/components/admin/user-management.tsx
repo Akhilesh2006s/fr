@@ -64,7 +64,7 @@ const UserManagement = () => {
   const fetchStudents = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/users', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -128,7 +128,7 @@ const UserManagement = () => {
     e.preventDefault();
     try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:3001/api/admin/users', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
           method: 'POST',
           headers: { 
             'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ const UserManagement = () => {
     
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/users/upload', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -209,7 +209,7 @@ const UserManagement = () => {
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
     if (window.confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
       try {
-        const response = await fetch(`http://localhost:3001/api/admin/users/${studentId}`, {
+        const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/users/${studentId}`, {
           method: 'DELETE',
           headers: { 
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
@@ -234,7 +234,7 @@ const UserManagement = () => {
   const handleDeleteAllStudents = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/users/delete-all', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users/delete-all', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

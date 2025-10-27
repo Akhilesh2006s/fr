@@ -66,7 +66,7 @@ export default function AdminManagement() {
     const fetchAdmins = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:3001/api/super-admin/admins', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/super-admin/admins', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ export default function AdminManagement() {
 
     setIsAddingAdmin(true);
     try {
-      const response = await fetch('http://localhost:3001/api/super-admin/admins', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/super-admin/admins', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ export default function AdminManagement() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/super-admin/admins/${adminId}`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/super-admin/admins/${adminId}`, {
         method: 'DELETE',
       });
 

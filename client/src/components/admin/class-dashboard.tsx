@@ -74,7 +74,7 @@ const ClassDashboard = () => {
   const fetchStudents = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/users', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ const ClassDashboard = () => {
   const fetchClasses = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/classes', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/classes', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

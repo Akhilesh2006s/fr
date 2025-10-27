@@ -57,7 +57,7 @@ const AdminDashboard = () => {
           return;
         }
 
-        const response = await fetch('http://localhost:3001/api/auth/me', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -135,7 +135,7 @@ const AdminDashboard = () => {
       }
 
       // Get admin info first
-      const adminRes = await fetch('http://localhost:3001/api/auth/me', {
+      const adminRes = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -150,16 +150,16 @@ const AdminDashboard = () => {
 
       // Fetch admin-specific data using admin endpoints
       const [studentsRes, teachersRes, videosRes, assessmentsRes] = await Promise.all([
-        fetch('http://localhost:3001/api/admin/users', {
+        fetch('https://asli-stud-back-production.up.railway.app/api/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:3001/api/admin/teachers', {
+        fetch('https://asli-stud-back-production.up.railway.app/api/admin/teachers', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:3001/api/videos', {
+        fetch('https://asli-stud-back-production.up.railway.app/api/videos', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:3001/api/assessments', {
+        fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);

@@ -113,7 +113,7 @@ export default function VideoLectures() {
     queryKey: ["/api/student/videos"],
     queryFn: async () => {
       const token = localStorage.getItem('authToken');
-      const response = await fetch("http://localhost:3001/api/student/videos", {
+      const response = await fetch("https://asli-stud-back-production.up.railway.app/api/student/videos", {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

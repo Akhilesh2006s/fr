@@ -100,7 +100,7 @@ export default function StudentExams() {
         }
 
         console.log('🔍 Student Exams: Making auth request to backend...');
-        const response = await fetch('http://localhost:3001/api/auth/me', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ export default function StudentExams() {
       console.log('🔍 Student Exams: Fetching assessments...');
       const token = localStorage.getItem('authToken');
       console.log('🔍 Student Exams: Token for assessments API:', !!token);
-      const response = await fetch('http://localhost:3001/api/assessments', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ export default function StudentExams() {
       console.log('🔍 Student Exams: Fetching exam results...');
       const token = localStorage.getItem('authToken');
       console.log('🔍 Student Exams: Token for results API:', !!token);
-      const response = await fetch('http://localhost:3001/api/student/exam-results', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/student/exam-results', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

@@ -101,7 +101,7 @@ const ExamManagement = () => {
     try {
       // Check if user is authenticated
       const token = localStorage.getItem('authToken');
-      const authResponse = await fetch('http://localhost:3001/api/auth/me', {
+      const authResponse = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ const ExamManagement = () => {
   const fetchExams = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/exams', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/exams', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -156,7 +156,7 @@ const ExamManagement = () => {
     try {
       console.log('Fetching questions for exam ID:', examId);
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/exams/${examId}/questions`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/exams/${examId}/questions`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -185,7 +185,7 @@ const ExamManagement = () => {
   const handleCreateExam = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/exams', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/exams', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const ExamManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/exams/${editingExam._id}`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/exams/${editingExam._id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -234,7 +234,7 @@ const ExamManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/exams/${examId}`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/exams/${examId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -281,7 +281,7 @@ const ExamManagement = () => {
       console.log('Question data:', questionData);
       
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/exams/${selectedExam._id}/questions`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/exams/${selectedExam._id}/questions`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -326,7 +326,7 @@ const ExamManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/questions/${editingQuestion._id}`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/questions/${editingQuestion._id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ const ExamManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:3001/api/admin/questions/${questionId}`, {
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/questions/${questionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -372,7 +372,7 @@ const ExamManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3001/api/admin/upload-question-image', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/upload-question-image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -19,7 +19,7 @@ export default function SuperAdminLogin() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -14,7 +14,7 @@ export default function Navigation() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const response = await fetch('http://localhost:3001/api/auth/logout', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,

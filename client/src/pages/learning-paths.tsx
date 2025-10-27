@@ -47,7 +47,7 @@ export default function LearningPaths() {
           return;
         }
 
-        const response = await fetch('http://localhost:3001/api/auth/me', {
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
