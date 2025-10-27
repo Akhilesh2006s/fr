@@ -308,42 +308,184 @@ export default function SuperAdminAnalyticsDashboard() {
                 <TabsTrigger value="subjects">Subject Performance</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="overview" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
+              <TabsContent value="overview" className="space-y-6">
+                {/* Main Statistics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Card className="bg-blue-50 border-blue-200">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Total Students</p>
-                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.students || 0}</p>
+                          <p className="text-sm font-medium text-blue-600">Total Students</p>
+                          <p className="text-2xl font-bold text-blue-900">{selectedAdmin?.stats?.students || 0}</p>
                         </div>
                         <UsersIcon className="h-8 w-8 text-blue-500" />
                       </div>
                     </CardContent>
                   </Card>
-                  <Card>
+                  
+                  <Card className="bg-purple-50 border-purple-200">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Total Teachers</p>
-                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.teachers || 0}</p>
+                          <p className="text-sm font-medium text-purple-600">Total Teachers</p>
+                          <p className="text-2xl font-bold text-purple-900">{selectedAdmin?.stats?.teachers || 0}</p>
                         </div>
                         <BookOpenIcon className="h-8 w-8 text-purple-500" />
                       </div>
                     </CardContent>
                   </Card>
-                  <Card>
+                  
+                  <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Exams Taken</p>
-                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.totalExamsTaken || 0}</p>
+                          <p className="text-sm font-medium text-green-600">Exams Conducted</p>
+                          <p className="text-2xl font-bold text-green-900">{selectedAdmin?.stats?.exams || 0}</p>
                         </div>
-                        <AwardIcon className="h-8 w-8 text-orange-500" />
+                        <AwardIcon className="h-8 w-8 text-green-500" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-orange-50 border-orange-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-orange-600">Total Videos</p>
+                          <p className="text-2xl font-bold text-orange-900">{selectedAdmin?.stats?.videos || 0}</p>
+                        </div>
+                        <BookOpenIcon className="h-8 w-8 text-orange-500" />
                       </div>
                     </CardContent>
                   </Card>
                 </div>
+
+                {/* Performance Summary */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Top Scorer */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg">
+                        <StarIcon className="w-5 h-5 mr-2 text-yellow-500" />
+                        Top Scorer
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {selectedAdmin?.analytics?.topStudents?.length > 0 ? (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                              <p className="font-semibold text-gray-900">
+                                {selectedAdmin.analytics.topStudents[0].studentName}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {selectedAdmin.analytics.topStudents[0].studentEmail}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <Badge className="bg-yellow-100 text-yellow-800 text-lg px-3 py-1">
+                                {selectedAdmin.analytics.topStudents[0].averageScore}%
+                              </Badge>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {selectedAdmin.analytics.topStudents[0].totalExams} exams
+                              </p>
+                            </div>
+                          </div>
+                          {selectedAdmin.analytics.topStudents.length > 1 && (
+                            <div className="text-sm text-gray-600">
+                              <p className="font-medium mb-2">Other Top Performers:</p>
+                              <div className="space-y-1">
+                                {selectedAdmin.analytics.topStudents.slice(1, 3).map((student, index) => (
+                                  <div key={index} className="flex justify-between">
+                                    <span>{student.studentName}</span>
+                                    <Badge variant="outline">{student.averageScore}%</Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-gray-500">
+                          <StarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                          <p>No exam results available yet</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Subject-wise Performance */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg">
+                        <TargetIcon className="w-5 h-5 mr-2 text-blue-500" />
+                        Subject-wise Performance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {selectedAdmin?.analytics?.subjectPerformance?.length > 0 ? (
+                        <div className="space-y-3">
+                          {selectedAdmin.analytics.subjectPerformance.map((subject, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                              <div className="flex items-center">
+                                <div className="w-3 h-3 rounded-full bg-blue-500 mr-3"></div>
+                                <span className="font-medium capitalize">{subject.subject}</span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Badge className={getScoreColor(subject.accuracy)}>
+                                  {subject.accuracy}%
+                                </Badge>
+                                <span className="text-sm text-gray-500">
+                                  {subject.correctAnswers}/{subject.totalQuestions}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-gray-500">
+                          <TargetIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                          <p>No subject performance data available</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Quick Stats Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-lg">
+                      <BarChart3Icon className="w-5 h-5 mr-2 text-green-500" />
+                      Performance Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <TrendingUpIcon className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-green-600">Average Score</p>
+                        <p className="text-2xl font-bold text-green-900">
+                          {selectedAdmin?.stats?.averageScore || '0'}%
+                        </p>
+                      </div>
+                      <div className="text-center p-4 bg-blue-50 rounded-lg">
+                        <CheckCircleIcon className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-blue-600">Average Accuracy</p>
+                        <p className="text-2xl font-bold text-blue-900">
+                          {selectedAdmin?.stats?.averageAccuracy || '0'}%
+                        </p>
+                      </div>
+                      <div className="text-center p-4 bg-purple-50 rounded-lg">
+                        <BookOpenIcon className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-purple-600">Total Assessments</p>
+                        <p className="text-2xl font-bold text-purple-900">
+                          {selectedAdmin?.stats?.assessments || 0}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="students" className="space-y-4">
