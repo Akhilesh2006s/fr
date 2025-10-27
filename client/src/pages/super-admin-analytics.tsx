@@ -288,7 +288,7 @@ export default function SuperAdminAnalyticsDashboard() {
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center">
                 <BarChart3Icon className="w-5 h-5 mr-2" />
-                Detailed Analytics: {selectedAdmin.name}
+                Detailed Analytics: {selectedAdmin?.name || 'Unknown Admin'}
               </div>
               <Button
                 variant="outline"
@@ -315,7 +315,7 @@ export default function SuperAdminAnalyticsDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-gray-600">Total Students</p>
-                          <p className="text-2xl font-bold">{selectedAdmin.stats.students}</p>
+                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.students || 0}</p>
                         </div>
                         <UsersIcon className="h-8 w-8 text-blue-500" />
                       </div>
@@ -326,7 +326,7 @@ export default function SuperAdminAnalyticsDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-gray-600">Total Teachers</p>
-                          <p className="text-2xl font-bold">{selectedAdmin.stats.teachers}</p>
+                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.teachers || 0}</p>
                         </div>
                         <BookOpenIcon className="h-8 w-8 text-purple-500" />
                       </div>
@@ -337,7 +337,7 @@ export default function SuperAdminAnalyticsDashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-gray-600">Exams Taken</p>
-                          <p className="text-2xl font-bold">{selectedAdmin.stats.totalExamsTaken}</p>
+                          <p className="text-2xl font-bold">{selectedAdmin?.stats?.totalExamsTaken || 0}</p>
                         </div>
                         <AwardIcon className="h-8 w-8 text-orange-500" />
                       </div>
@@ -365,7 +365,7 @@ export default function SuperAdminAnalyticsDashboard() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {selectedAdmin.analytics.topStudents.map((student, index) => (
+                        {selectedAdmin?.analytics?.topStudents?.map((student, index) => (
                           <TableRow key={index}>
                             <TableCell className="font-medium">{student.studentName}</TableCell>
                             <TableCell className="text-gray-500">{student.studentEmail}</TableCell>
@@ -376,7 +376,13 @@ export default function SuperAdminAnalyticsDashboard() {
                               </Badge>
                             </TableCell>
                           </TableRow>
-                        ))}
+                        )) || (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center text-gray-500">
+                              No student data available
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -403,7 +409,7 @@ export default function SuperAdminAnalyticsDashboard() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {selectedAdmin.analytics.recentResults.map((result, index) => (
+                        {selectedAdmin?.analytics?.recentResults?.map((result, index) => (
                           <TableRow key={index}>
                             <TableCell className="font-medium">{result.examTitle}</TableCell>
                             <TableCell>{result.studentName}</TableCell>
@@ -415,7 +421,13 @@ export default function SuperAdminAnalyticsDashboard() {
                             <TableCell>{result.marks}</TableCell>
                             <TableCell>{formatDate(result.completedAt)}</TableCell>
                           </TableRow>
-                        ))}
+                        )) || (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center text-gray-500">
+                              No recent exam results available
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -442,7 +454,7 @@ export default function SuperAdminAnalyticsDashboard() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {selectedAdmin.analytics.subjectPerformance.map((subject, index) => (
+                        {selectedAdmin?.analytics?.subjectPerformance?.map((subject, index) => (
                           <TableRow key={index}>
                             <TableCell className="font-medium capitalize">{subject.subject}</TableCell>
                             <TableCell>
@@ -458,7 +470,13 @@ export default function SuperAdminAnalyticsDashboard() {
                             <TableCell>{subject.totalQuestions}</TableCell>
                             <TableCell>{subject.correctAnswers}</TableCell>
                           </TableRow>
-                        ))}
+                        )) || (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center text-gray-500">
+                              No subject performance data available
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </CardContent>
