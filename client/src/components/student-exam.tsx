@@ -93,16 +93,21 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
       if (!response.ok) throw new Error('Failed to fetch exam');
       const examData = await response.json();
       console.log('Fetched exam data:', examData);
-      console.log('Questions:', examData.questions);
-      if (examData.questions && examData.questions.length > 0) {
+      
+      // Handle API response structure - check if data is nested
+      const actualExamData = examData.data || examData;
+      console.log('Actual exam data:', actualExamData);
+      console.log('Questions:', actualExamData.questions);
+      
+      if (actualExamData.questions && actualExamData.questions.length > 0) {
         console.log('First question details:', {
-          id: examData.questions[0]._id,
-          type: examData.questions[0].questionType,
-          options: examData.questions[0].options,
-          correctAnswer: examData.questions[0].correctAnswer
+          id: actualExamData.questions[0]._id,
+          type: actualExamData.questions[0].questionType,
+          options: actualExamData.questions[0].options,
+          correctAnswer: actualExamData.questions[0].correctAnswer
         });
       }
-      return examData;
+      return actualExamData;
     }
   });
 
