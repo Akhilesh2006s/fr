@@ -639,8 +639,15 @@ export default function StudentExam({ examId, onComplete, onExit }: StudentExamP
                         type="number"
                         placeholder="Enter your answer"
                         value={answers[currentQuestion._id] || ''}
-                        onChange={(e) => handleAnswerChange(currentQuestion._id, e.target.value)}
-                        className="text-lg"
+                        onChange={(e) => {
+                          console.log('Input onChange triggered:', e.target.value);
+                          handleAnswerChange(currentQuestion._id, e.target.value);
+                        }}
+                        onFocus={(e) => console.log('Input focused')}
+                        onBlur={(e) => console.log('Input blurred')}
+                        onClick={(e) => console.log('Input clicked')}
+                        className="text-lg cursor-text"
+                        autoFocus
                       />
                     </div>
                   )}
