@@ -70,7 +70,7 @@ const SubjectManagement = () => {
   const fetchSubjects = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/subjects', {
+      const response = await fetch('http://localhost:3001/api/admin/subjects', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ const SubjectManagement = () => {
   const fetchTeachers = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/teachers', {
+      const response = await fetch('http://localhost:3001/api/admin/teachers', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -154,7 +154,7 @@ const SubjectManagement = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/subjects', {
+      const response = await fetch('http://localhost:3001/api/admin/subjects', {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -183,10 +183,12 @@ const SubjectManagement = () => {
     if (!editingSubject) return;
 
     try {
-      const response = await fetch(`/api/admin/subjects/${editingSubject.id}`, {
+      const response = await fetch(`http://localhost:3001/api/admin/subjects/${editingSubject.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
         body: JSON.stringify(editingSubject)
       });
 
@@ -208,9 +210,11 @@ const SubjectManagement = () => {
   const handleDeleteSubject = async (subjectId: string, subjectName: string) => {
     if (window.confirm(`Are you sure you want to delete ${subjectName}? This action cannot be undone.`)) {
       try {
-        const response = await fetch(`/api/admin/subjects/${subjectId}`, {
+        const response = await fetch(`http://localhost:3001/api/admin/subjects/${subjectId}`, {
           method: 'DELETE',
-          credentials: 'include'
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
         });
 
         if (response.ok) {
