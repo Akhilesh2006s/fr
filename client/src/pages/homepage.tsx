@@ -139,14 +139,14 @@ const ProfessionalHeroContent = () => {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-responsive-3xl tracking-tight font-light text-blue-800 mb-responsive">
-          <span className="font-bold italic text-blue-600">Intelligent</span> Learning
+        <h1 className="text-responsive-3xl tracking-tight font-light text-slate-gray-800 mb-responsive">
+          <span className="font-bold italic text-indigo-blue-700">Intelligent</span> Learning
           <br />
-          <span className="font-light tracking-tight text-teal-600">Platform</span>
+          <span className="font-light tracking-tight text-teal-green-700">Platform</span>
         </h1>
 
         {/* Description */}
-        <p className="text-responsive-base font-light text-blue-700 mb-responsive leading-relaxed max-w-2xl mx-auto px-responsive">
+        <p className="text-responsive-base font-light text-slate-gray-700 mb-responsive leading-relaxed max-w-2xl mx-auto px-responsive">
           Transform your education with our advanced AI technology. Personalized learning paths, 
           interactive content, and intelligent assessments that adapt to your unique learning style.
         </p>
@@ -337,10 +337,10 @@ const Homepage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-responsive-2xl font-bold text-blue-800 mb-responsive">
+            <h2 className="text-responsive-2xl font-bold text-slate-gray-800 mb-responsive">
               Why Choose Asli Stud?
             </h2>
-            <p className="text-responsive-lg text-blue-700 max-w-3xl mx-auto px-responsive">
+            <p className="text-responsive-lg text-slate-gray-700 max-w-3xl mx-auto px-responsive">
               Experience the future of education with our AI-powered platform designed 
               to maximize your learning potential and exam success.
             </p>
@@ -377,13 +377,13 @@ const Homepage = () => {
                       <feature.icon className="w-8 h-8 text-white" />
                     </motion.div>
                     
-                    <CardTitle className="text-xl font-bold text-blue-800 group-hover:text-blue-600 transition-colors duration-300">
+                    <CardTitle className="text-xl font-bold text-slate-gray-800 group-hover:text-slate-gray-600 transition-colors duration-300">
                       {feature.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <motion.p 
-                      className="text-blue-700 text-center group-hover:text-blue-600 transition-colors duration-300"
+                      className="text-slate-gray-700 text-center group-hover:text-slate-gray-600 transition-colors duration-300"
                       whileHover={{ scale: 1.02 }}
                     >
                       {feature.description}
@@ -429,15 +429,15 @@ const Homepage = () => {
                 </motion.div>
                 
                 <motion.div 
-                  className="text-4xl md:text-5xl font-bold text-blue-800 mb-2"
+                  className="text-4xl md:text-5xl font-bold text-slate-gray-800 mb-2"
                   whileHover={{ scale: 1.1 }}
                 >
                   {stat.number}
                 </motion.div>
                 
                 <motion.div 
-                  className="text-blue-700 font-medium"
-                  whileHover={{ color: "#1D4ED8" }}
+                  className="text-slate-gray-700 font-medium"
+                  whileHover={{ color: "#334155" }}
                 >
                   {stat.label}
                 </motion.div>
@@ -511,10 +511,10 @@ const Homepage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-gray-800 mb-6">
               About Asli Stud
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-gray-700 max-w-3xl mx-auto">
               We're revolutionizing education with cutting-edge AI technology, making learning personalized, 
               engaging, and effective for students worldwide.
             </p>
@@ -536,8 +536,8 @@ const Homepage = () => {
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Brain className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">AI-Powered</h3>
-                  <p className="text-white/70">
+                  <h3 className="text-xl font-bold text-slate-gray-800 mb-3">AI-Powered</h3>
+                  <p className="text-slate-gray-700">
                     Advanced artificial intelligence that adapts to your learning style and pace.
                   </p>
                 </CardContent>
@@ -553,8 +553,8 @@ const Homepage = () => {
                   <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Users className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">Community</h3>
-                  <p className="text-white/70">
+                  <h3 className="text-xl font-bold text-slate-gray-800 mb-3">Community</h3>
+                  <p className="text-slate-gray-700">
                     Join thousands of students in a supportive learning community.
                   </p>
                 </CardContent>
@@ -570,8 +570,8 @@ const Homepage = () => {
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Trophy className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">Results</h3>
-                  <p className="text-white/70">
+                  <h3 className="text-xl font-bold text-slate-gray-800 mb-3">Results</h3>
+                  <p className="text-slate-gray-700">
                     Proven track record with 95% success rate and improved learning outcomes.
                   </p>
                 </CardContent>
@@ -582,7 +582,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-indigo-blue-600/20 via-teal-green-600/20 via-amber-gold-600/20 to-slate-gray-600/20 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-indigo-blue-800/80 via-teal-green-800/80 via-amber-gold-800/80 to-slate-gray-800/80 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
