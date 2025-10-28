@@ -128,9 +128,13 @@ const TeacherManagement = () => {
           return null;
         }
         
+        // Load saved assignments from localStorage
+        const savedAssignments = JSON.parse(localStorage.getItem('teacherClassAssignments') || '{}');
+        const teacherId = teacher._id || teacher.id;
+        
         const mappedTeacher = {
           ...teacher,
-          id: teacher._id || teacher.id,
+          id: teacherId,
           subjects: teacher.subjects && Array.isArray(teacher.subjects) 
             ? teacher.subjects
                 .filter((subject: any) => subject !== null && subject !== undefined && typeof subject === 'object')
@@ -139,7 +143,7 @@ const TeacherManagement = () => {
                   id: subject._id || subject.id || Math.random().toString(36).substr(2, 9) // Fallback ID
                 }))
             : [],
-          assignedClassIds: teacher.assignedClassIds || []
+          assignedClassIds: teacher.assignedClassIds || savedAssignments[teacherId] || []
         };
         
         // Log teacher data for debugging
@@ -406,9 +410,16 @@ const TeacherManagement = () => {
         
         // Update UI immediately with optimistic update
         if (assigningClassTeacher) {
+          const updatedTeacher = { ...assigningClassTeacher, assignedClassIds: classIds };
+          
+          // Save to localStorage for persistence across reloads
+          const savedAssignments = JSON.parse(localStorage.getItem('teacherClassAssignments') || '{}');
+          savedAssignments[assigningClassTeacher.id] = classIds;
+          localStorage.setItem('teacherClassAssignments', JSON.stringify(savedAssignments));
+          
           setTeachers(prev => prev.map(teacher => 
             teacher.id === assigningClassTeacher.id 
-              ? { ...teacher, assignedClassIds: classIds }
+              ? updatedTeacher
               : teacher
           ));
         }
