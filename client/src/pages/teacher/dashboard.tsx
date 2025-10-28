@@ -807,12 +807,44 @@ const TeacherDashboard = () => {
                       </Button>
                     
                     {generatedLessonPlan && (
-                      <div className="mt-6 p-4 bg-white rounded-xl border border-gray-200">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-3">Generated Lesson Plan:</h4>
-                        <div className="prose max-w-none">
-                          <pre className="whitespace-pre-wrap text-sm text-gray-700">{generatedLessonPlan}</pre>
-                    </div>
-                    </div>
+                      <div className="mt-6 p-6 bg-white rounded-xl border border-gray-200 shadow-lg">
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Generated Lesson Plan:</h4>
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+                          <div className="prose prose-sm max-w-none">
+                            <div className="text-gray-800 leading-relaxed">
+                              {generatedLessonPlan.split('\n').map((line, index) => {
+                                if (line.startsWith('###')) {
+                                  return (
+                                    <h3 key={index} className="text-lg font-bold text-blue-900 mt-4 mb-2">
+                                      {line.replace('###', '').trim()}
+                                    </h3>
+                                  );
+                                } else if (line.startsWith('**') && line.endsWith('**')) {
+                                  return (
+                                    <h4 key={index} className="text-base font-semibold text-blue-800 mt-3 mb-1">
+                                      {line.replace(/\*\*/g, '').trim()}
+                                    </h4>
+                                  );
+                                } else if (line.startsWith('-') || line.startsWith('*')) {
+                                  return (
+                                    <div key={index} className="ml-4 mb-1 text-gray-700">
+                                      • {line.replace(/^[-*]\s*/, '').trim()}
+                                    </div>
+                                  );
+                                } else if (line.trim() === '') {
+                                  return <br key={index} />;
+                                } else {
+                                  return (
+                                    <p key={index} className="mb-2 text-gray-700">
+                                      {line.trim()}
+                                    </p>
+                                  );
+                                }
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     )}
                     </div>
                 </div>
