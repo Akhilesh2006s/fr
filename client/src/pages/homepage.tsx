@@ -234,7 +234,7 @@ const ProfessionalHeader = () => {
             alt="Asli Stud Logo" 
             className="w-16 h-16 object-contain"
           />
-          <span className="text-white font-bold text-2xl">Asli Stud</span>
+          <span className="text-blue-600 font-bold text-2xl">Asli Stud</span>
         </div>
       </div>
     </header>
@@ -253,13 +253,13 @@ const BottomRightNav = () => {
       {/* Sign In Button */}
       <Link href="/auth/login">
         <motion.button
-          className="group relative w-14 h-14 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+          className="group relative w-14 h-14 bg-blue-200/80 backdrop-blur-sm border border-blue-300 rounded-full flex items-center justify-center text-blue-700 hover:bg-blue-300/80 transition-all duration-300 shadow-lg"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
         >
           <User className="w-6 h-6" />
           <motion.div
-            className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+            className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
             initial={{ opacity: 0, x: 10 }}
             whileHover={{ opacity: 1, x: 0 }}
           >
@@ -270,14 +270,14 @@ const BottomRightNav = () => {
 
       {/* Features Button */}
       <motion.button
-        className="group relative w-14 h-14 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+        className="group relative w-14 h-14 bg-cyan-200/80 backdrop-blur-sm border border-cyan-300 rounded-full flex items-center justify-center text-cyan-700 hover:bg-cyan-300/80 transition-all duration-300 shadow-lg"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
       >
         <Sparkles className="w-6 h-6" />
         <motion.div
-          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-cyan-600 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
           initial={{ opacity: 0, x: 10 }}
           whileHover={{ opacity: 1, x: 0 }}
         >
@@ -287,14 +287,14 @@ const BottomRightNav = () => {
 
       {/* About Button */}
       <motion.button
-        className="group relative w-14 h-14 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+        className="group relative w-14 h-14 bg-teal-200/80 backdrop-blur-sm border border-teal-300 rounded-full flex items-center justify-center text-teal-700 hover:bg-teal-300/80 transition-all duration-300 shadow-lg"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
       >
         <Info className="w-6 h-6" />
         <motion.div
-          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-teal-600 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
           initial={{ opacity: 0, x: 10 }}
           whileHover={{ opacity: 1, x: 0 }}
         >
@@ -304,14 +304,14 @@ const BottomRightNav = () => {
 
       {/* Home Button */}
       <motion.button
-        className="group relative w-14 h-14 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 shadow-lg"
+        className="group relative w-14 h-14 bg-emerald-200/80 backdrop-blur-sm border border-emerald-300 rounded-full flex items-center justify-center text-emerald-700 hover:bg-emerald-300/80 transition-all duration-300 shadow-lg"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <Home className="w-6 h-6" />
         <motion.div
-          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+          className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-emerald-600 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
           initial={{ opacity: 0, x: 10 }}
           whileHover={{ opacity: 1, x: 0 }}
         >
@@ -327,25 +327,19 @@ const ProfessionalHeroContent = () => {
   return (
     <main className="absolute inset-0 flex items-center justify-center z-20">
       <div className="text-center max-w-4xl mx-auto px-8">
-        <div
-          className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm mb-4 relative"
-          style={{
-            filter: "url(#glass-effect)",
-          }}
-        >
-          <div className="absolute top-0 left-1 right-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full" />
-            <span className="text-white/90 text-xs font-light relative z-10">✨ Asli Stud Learning Experience</span>
+        <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-200 to-cyan-200 backdrop-blur-sm mb-6 shadow-lg">
+          <span className="text-blue-800 text-sm font-medium">✨ Asli Stud Learning Experience</span>
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-6xl md:text-8xl md:leading-16 tracking-tight font-light text-white mb-8">
-          <span className="font-medium italic">Intelligent</span> Learning
+        <h1 className="text-6xl md:text-8xl md:leading-16 tracking-tight font-light text-blue-800 mb-8">
+          <span className="font-bold italic text-blue-600">Intelligent</span> Learning
           <br />
-          <span className="font-light tracking-tight text-white">Platform</span>
+          <span className="font-light tracking-tight text-teal-600">Platform</span>
         </h1>
 
         {/* Description */}
-        <p className="text-lg font-light text-white/80 mb-8 leading-relaxed max-w-2xl mx-auto">
+        <p className="text-lg font-light text-blue-700 mb-8 leading-relaxed max-w-2xl mx-auto">
           Transform your education with our advanced AI technology. Personalized learning paths, 
           interactive content, and intelligent assessments that adapt to your unique learning style.
         </p>
@@ -353,12 +347,12 @@ const ProfessionalHeroContent = () => {
         {/* Buttons */}
         <div className="flex items-center justify-center gap-6 flex-wrap">
           <Link href="/auth/register">
-            <button className="px-12 py-4 rounded-full bg-transparent border border-white/30 text-white font-medium text-lg transition-all duration-200 hover:bg-white/10 hover:border-white/50 cursor-pointer">
+            <button className="px-12 py-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium text-lg transition-all duration-200 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-lg hover:shadow-xl">
               Get Started
             </button>
           </Link>
           <Link href="/auth/login">
-            <button className="px-12 py-4 rounded-full bg-white text-black font-medium text-lg transition-all duration-200 hover:bg-white/90 cursor-pointer">
+            <button className="px-12 py-4 rounded-full bg-white text-blue-600 font-medium text-lg transition-all duration-200 hover:bg-blue-50 cursor-pointer border-2 border-blue-300 hover:border-blue-400 shadow-lg">
               Sign In
             </button>
           </Link>
@@ -375,7 +369,7 @@ const ProfessionalPulsingCircle = () => {
       <div className="relative w-20 h-20 flex items-center justify-center">
         {/* Pulsing Border Circle */}
         <motion.div
-          className="w-16 h-16 rounded-full border-2 border-white/20"
+          className="w-16 h-16 rounded-full border-2 border-blue-300"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.8, 0.3],
@@ -402,7 +396,7 @@ const ProfessionalPulsingCircle = () => {
           <defs>
             <path id="circle" d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
           </defs>
-          <text className="text-sm fill-white/80">
+          <text className="text-sm fill-blue-600">
             <textPath href="#circle" startOffset="0%">
               Asli Stud is amazing • Asli Stud is amazing • Asli Stud is amazing •
             </textPath>
@@ -510,24 +504,24 @@ const Homepage = () => {
   ];
 
   return (
-    <ShaderBackground>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
       <ProfessionalHeader />
       <BottomRightNav />
       
       {/* Scroll Progress Indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-purple-600 z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-teal-400 z-50 origin-left"
         style={{ scaleX: scrollYProgress }}
       />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-100 via-cyan-100 to-teal-100">
         <ProfessionalHeroContent />
         <ProfessionalPulsingCircle />
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-black/50 backdrop-blur-sm">
+      <section id="features" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             className="text-center mb-16"
@@ -536,10 +530,10 @@ const Homepage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-blue-800 mb-6">
               Why Choose Asli Stud?
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-blue-700 max-w-3xl mx-auto">
               Experience the future of education with our AI-powered platform designed 
               to maximize your learning potential and exam success.
             </p>
@@ -563,10 +557,10 @@ const Homepage = () => {
                 }}
                 className="group"
               >
-                <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm group-hover:bg-white/20">
+                <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm group-hover:bg-white/90 shadow-lg">
                   <CardHeader className="text-center relative overflow-hidden">
                     <motion.div 
-                      className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 relative"
+                      className="w-16 h-16 bg-gradient-to-r from-blue-400 to-teal-400 rounded-full flex items-center justify-center mx-auto mb-4 relative shadow-lg"
                       whileHover={{ 
                         rotate: 360,
                         scale: 1.1
@@ -576,13 +570,13 @@ const Homepage = () => {
                       <feature.icon className="w-8 h-8 text-white" />
                     </motion.div>
                     
-                    <CardTitle className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors duration-300">
+                    <CardTitle className="text-xl font-bold text-blue-800 group-hover:text-blue-600 transition-colors duration-300">
                       {feature.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <motion.p 
-                      className="text-white/70 text-center group-hover:text-white/90 transition-colors duration-300"
+                      className="text-blue-700 text-center group-hover:text-blue-600 transition-colors duration-300"
                       whileHover={{ scale: 1.02 }}
                     >
                       {feature.description}
@@ -596,7 +590,7 @@ const Homepage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white/5 backdrop-blur-sm relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-cyan-50 to-teal-50 backdrop-blur-sm relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -628,15 +622,15 @@ const Homepage = () => {
                 </motion.div>
                 
                 <motion.div 
-                  className="text-4xl md:text-5xl font-bold text-white mb-2"
+                  className="text-4xl md:text-5xl font-bold text-blue-800 mb-2"
                   whileHover={{ scale: 1.1 }}
                 >
                   {stat.number}
                 </motion.div>
                 
                 <motion.div 
-                  className="text-white/70 font-medium"
-                  whileHover={{ color: "#60A5FA" }}
+                  className="text-blue-700 font-medium"
+                  whileHover={{ color: "#1D4ED8" }}
                 >
                   {stat.label}
                 </motion.div>
@@ -891,7 +885,7 @@ const Homepage = () => {
           </motion.div>
         </div>
       </section>
-    </ShaderBackground>
+    </div>
   );
 };
 

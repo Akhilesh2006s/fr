@@ -15,7 +15,7 @@ import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import AdminDashboard from "./pages/admin/dashboard";
 import SubjectManagement from "./pages/admin/subject-management";
-import TeacherDashboard from "./components/teacher-dashboard";
+import TeacherDashboard from "./pages/teacher/dashboard";
 import StudentExams from "./pages/student-exams";
 import SubjectContent from "./pages/subject-content";
 import SuperAdminLogin from "./pages/super-admin-login";

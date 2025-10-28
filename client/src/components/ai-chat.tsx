@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Mic, Image as ImageIcon, Zap, Loader2, MessageCircle } from "lucide-react";
+import { Send, Zap, Loader2, MessageCircle } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -201,7 +201,7 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
               <div className="text-center text-gray-500 py-8">
                 <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>Start a conversation with your AI tutor!</p>
-                <p className="text-sm mt-2">Ask questions, upload images, or use voice input.</p>
+                <p className="text-sm mt-2">Ask any questions about your studies.</p>
               </div>
             ) : (
               messages.map((msg, index) => (
@@ -292,46 +292,7 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
               )}
             </Button>
           </div>
-          
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              onClick={handleVoiceInput}
-              disabled={isListening || sendMessageMutation.isPending}
-              className="flex-1"
-            >
-              {isListening ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Mic className="w-4 h-4 mr-2" />
-              )}
-              {isListening ? "Listening..." : "Voice"}
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={analyzeImageMutation.isPending}
-              className="flex-1"
-            >
-              {analyzeImageMutation.isPending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <ImageIcon className="w-4 h-4 mr-2" />
-              )}
-              Image
-            </Button>
-          </div>
         </div>
-
-        {/* Hidden file input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="hidden"
-        />
       </CardContent>
     </Card>
   );

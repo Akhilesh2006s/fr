@@ -38,6 +38,7 @@ interface TeacherStats {
   totalClasses: number;
   totalVideos: number;
   totalAssessments: number;
+  totalExams: number;
   averagePerformance: number;
   recentActivity: any[];
 }
@@ -69,6 +70,23 @@ interface Assessment {
   attempts: number;
   averageScore: number;
   createdAt: string;
+  createdBy?: {
+    name: string;
+    email: string;
+  };
+}
+
+interface Exam {
+  id: string;
+  title: string;
+  subject: string;
+  questions: number;
+  duration: number;
+  createdAt: string;
+  createdBy?: {
+    name: string;
+    email: string;
+  };
 }
 
 const TeacherDashboard = () => {
@@ -78,12 +96,14 @@ const TeacherDashboard = () => {
     totalClasses: 0,
     totalVideos: 0,
     totalAssessments: 0,
+    totalExams: 0,
     averagePerformance: 0,
     recentActivity: []
   });
   const [students, setStudents] = useState<Student[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [exams, setExams] = useState<Exam[]>([]);
   const [assignedClasses, setAssignedClasses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [teacherEmail, setTeacherEmail] = useState<string>(localStorage.getItem('userEmail') || '');
@@ -131,7 +151,7 @@ const TeacherDashboard = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/videos', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher-videos-admin-style', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -166,7 +186,7 @@ const TeacherDashboard = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/assessments', {
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher-assessments-admin-style', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -207,15 +227,57 @@ const TeacherDashboard = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setStats(data.stats || stats);
-        setStudents(data.students || []);
-        setVideos(data.videos || []);
-        setAssessments(data.assessments || []);
-        setTeacherEmail(data.teacherEmail || '');
-        setAssignedClasses(data.assignedClasses || []);
+        console.log('Teacher dashboard data:', data);
+        
+        if (data.success) {
+          setStats({
+            ...(data.data.stats || {}),
+            recentActivity: data.data.recentActivity || []
+          });
+          setStudents(data.data.students || []);
+          setVideos(data.data.videos || []);
+          setAssessments(data.data.assessments || []);
+          setExams(data.data.exams || []);
+          setTeacherEmail(data.data.teacherEmail || '');
+          setAssignedClasses(data.data.assignedClasses || []);
+        } else {
+          console.error('API returned success: false:', data.message);
+        }
+      } else {
+        console.error('Failed to fetch teacher data:', response.status);
+        // Show fallback data when API fails
+        setStats({
+          totalStudents: 0,
+          totalClasses: 0,
+          totalVideos: 0,
+          totalAssessments: 0,
+          totalExams: 0,
+          averagePerformance: 0,
+          recentActivity: []
+        });
+        setStudents([]);
+        setVideos([]);
+        setAssessments([]);
+        setExams([]);
+        setAssignedClasses([]);
       }
     } catch (error) {
       console.error('Failed to fetch teacher data:', error);
+      // Show fallback data when API fails
+      setStats({
+        totalStudents: 0,
+        totalClasses: 0,
+        totalVideos: 0,
+        totalAssessments: 0,
+        totalExams: 0,
+        averagePerformance: 0,
+        recentActivity: []
+      });
+      setStudents([]);
+      setVideos([]);
+      setAssessments([]);
+      setExams([]);
+      setAssignedClasses([]);
     } finally {
       setIsLoading(false);
     }
@@ -292,6 +354,14 @@ const TeacherDashboard = () => {
                 Students
               </Button>
               <Button
+                variant={activeTab === 'exams' ? 'default' : 'ghost'}
+                className={`w-full justify-start ${activeTab === 'exams' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                onClick={() => setActiveTab('exams')}
+              >
+                <FileText className="w-4 h-4 mr-3" />
+                Exams
+              </Button>
+              <Button
                 variant={activeTab === 'analytics' ? 'default' : 'ghost'}
                 className={`w-full justify-start ${activeTab === 'analytics' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
                 onClick={() => setActiveTab('analytics')}
@@ -309,9 +379,9 @@ const TeacherDashboard = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Welcome, {teacherEmail || 'Teacher'}!
-                </h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          Welcome, {teacherEmail || localStorage.getItem('userEmail') || 'Teacher'}!
+        </h1>
                 <p className="text-gray-600 mt-2">Manage your classes and track student progress</p>
               </div>
               <div className="flex items-center space-x-4">
@@ -427,7 +497,7 @@ const TeacherDashboard = () => {
               >
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h3>
                 <div className="space-y-4">
-                  {stats.recentActivity.map((activity, index) => (
+                  {(stats.recentActivity || []).map((activity, index) => (
                     <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
                         <BookOpen className="w-5 h-5 text-white" />
@@ -591,6 +661,7 @@ const TeacherDashboard = () => {
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{video.subject}</p>
+                      <p className="text-xs text-gray-500 mb-2">Created by: {video.createdBy?.name || 'Unknown'}</p>
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <span>{video.duration}</span>
                         <span>{video.views} views</span>
@@ -621,6 +692,7 @@ const TeacherDashboard = () => {
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{assessment.subject}</p>
+                      <p className="text-xs text-gray-500 mb-2">Created by: {assessment.createdBy?.name || 'Unknown'}</p>
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <span>{assessment.questions} questions</span>
                         <span>{assessment.attempts} attempts</span>
@@ -755,6 +827,49 @@ const TeacherDashboard = () => {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Exams */}
+          {activeTab === 'exams' && (
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold text-gray-900">My Exams</h2>
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Exam
+                </Button>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Exam List</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {exams.map((exam) => (
+                    <div key={exam.id} className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-gray-900">{exam.title}</h4>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{exam.subject}</p>
+                      <p className="text-xs text-gray-500 mb-2">Created by: {exam.createdBy?.name || 'Unknown'}</p>
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>{exam.questions} questions</span>
+                        <span>{exam.duration} min</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
