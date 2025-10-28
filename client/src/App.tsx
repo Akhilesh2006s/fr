@@ -21,6 +21,7 @@ import SubjectContent from "./pages/subject-content";
 import SuperAdminLogin from "./pages/super-admin-login";
 import SuperAdminDashboard from "./pages/super-admin-dashboard";
 import SuperAdminTest from "./pages/super-admin-test";
+import Onboarding from "./pages/onboarding";
 
 function Router() {
   return (
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/super-admin/login" component={SuperAdminLogin} />
       <Route path="/super-admin/dashboard" component={SuperAdminDashboard} />
       <Route path="/super-admin/test" component={SuperAdminTest} />
+      <Route path="/onboarding" component={Onboarding} />
       <Route component={NotFound} />
     </Switch>
   );

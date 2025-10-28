@@ -84,15 +84,47 @@ const TeacherManagement = () => {
       }
       
       const data = await response.json();
+      console.log('API Response:', data); // Debug log
+      
+      // Handle different response formats
+      let teachersArray = [];
+      if (Array.isArray(data)) {
+        teachersArray = data;
+      } else if (data && Array.isArray(data.data)) {
+        teachersArray = data.data;
+      } else if (data && Array.isArray(data.teachers)) {
+        teachersArray = data.teachers;
+      } else {
+        console.warn('Unexpected API response format:', data);
+        teachersArray = [];
+      }
+      
       // Map backend _id to frontend id and ensure subjects are properly mapped
-      const mappedTeachers = data.map((teacher: any) => ({
-        ...teacher,
-        id: teacher._id || teacher.id,
-        subjects: teacher.subjects ? teacher.subjects.map((subject: any) => ({
-          ...subject,
-          id: subject._id || subject.id
-        })) : []
-      }));
+      const mappedTeachers = teachersArray.map((teacher: any) => {
+        // Ensure teacher object exists
+        if (!teacher) {
+          console.warn('Null teacher object found, skipping...');
+          return null;
+        }
+        
+        const mappedTeacher = {
+          ...teacher,
+          id: teacher._id || teacher.id,
+          subjects: teacher.subjects && Array.isArray(teacher.subjects) 
+            ? teacher.subjects
+                .filter((subject: any) => subject !== null && subject !== undefined && typeof subject === 'object')
+                .map((subject: any) => ({
+                  ...subject,
+                  id: subject._id || subject.id || Math.random().toString(36).substr(2, 9) // Fallback ID
+                }))
+            : []
+        };
+        
+        // Log teacher data for debugging
+        console.log(`Teacher ${mappedTeacher.fullName} subjects:`, mappedTeacher.subjects);
+        
+        return mappedTeacher;
+      }).filter(teacher => teacher !== null); // Remove any null teachers
       setTeachers(mappedTeachers);
     } catch (error) {
       console.error('Failed to fetch teachers:', error);
@@ -144,7 +176,28 @@ const TeacherManagement = () => {
       }
       
       const data = await response.json();
-      setSubjects(data);
+      console.log('Subjects API Response:', data); // Debug log
+      
+      // Handle different response formats
+      let subjectsArray = [];
+      if (Array.isArray(data)) {
+        subjectsArray = data;
+      } else if (data && Array.isArray(data.data)) {
+        subjectsArray = data.data;
+      } else if (data && Array.isArray(data.subjects)) {
+        subjectsArray = data.subjects;
+      } else {
+        console.warn('Unexpected subjects API response format:', data);
+        subjectsArray = [];
+      }
+      
+      // Map backend _id to frontend id
+      const mappedSubjects = subjectsArray.map((subject: any) => ({
+        ...subject,
+        id: subject._id || subject.id
+      }));
+      
+      setSubjects(mappedSubjects);
     } catch (error) {
       console.error('Failed to fetch subjects:', error);
       setSubjects([
@@ -188,10 +241,18 @@ const TeacherManagement = () => {
     if (!editingTeacher) return;
 
     try {
-      const response = await fetch(`/api/admin/teachers/${editingTeacher.id}`, {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/teachers/${editingTeacher.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(editingTeacher)
       });
 
@@ -213,9 +274,17 @@ const TeacherManagement = () => {
   const handleDeleteTeacher = async (teacherId: string, teacherName: string) => {
     if (window.confirm(`Are you sure you want to delete ${teacherName}? This action cannot be undone.`)) {
       try {
-        const response = await fetch(`/api/admin/teachers/${teacherId}`, {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          alert('Authentication token not found. Please log in again.');
+          return;
+        }
+
+        const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/teachers/${teacherId}`, {
           method: 'DELETE',
-          credentials: 'include'
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
 
         if (response.ok) {
@@ -239,23 +308,102 @@ const TeacherManagement = () => {
     }
 
     console.log('Assigning subjects:', { teacherId, subjectIds });
+    console.log('Subject IDs type:', typeof subjectIds, 'Length:', subjectIds.length);
+    console.log('Subject IDs details:', subjectIds);
 
     try {
-      const response = await fetch(`/api/admin/teachers/${teacherId}/assign-subjects`, {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/teachers/${teacherId}/assign-subjects`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ subjectIds })
       });
 
+      const responseData = await response.json();
+      console.log('Assignment response:', responseData);
+
       if (response.ok) {
         console.log('Subjects assigned successfully, refreshing teacher data...');
-        await fetchTeachers(); // Wait for refresh to complete
+
+        // 1) Optimistic update (keep until server confirms)
+        if (assigningTeacher) {
+          const updatedTeacher = {
+            ...assigningTeacher,
+            subjects: subjectIds.map(id => {
+              const subject = subjects.find(s => (s._id || s.id) === id);
+              return subject ? {
+                id: subject._id || subject.id,
+                name: subject.name,
+                code: subject.code,
+                description: subject.description
+              } : null;
+            }).filter(Boolean)
+          };
+
+          setTeachers(prevTeachers =>
+            prevTeachers.map(teacher =>
+              teacher.id === assigningTeacher.id ? updatedTeacher : teacher
+            )
+          );
+        }
+
+        // 2) Poll the server a few times to avoid flicker from eventual consistency
+        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+        let serverConfirmed = false;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          await delay(600); // give backend time to persist
+          try {
+            const token2 = localStorage.getItem('authToken');
+            const resp2 = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/teachers', {
+              headers: {
+                'Authorization': `Bearer ${token2}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            if (!resp2.ok) throw new Error(`Refresh status ${resp2.status}`);
+            const raw = await resp2.json();
+            const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : Array.isArray(raw?.teachers) ? raw.teachers : [];
+
+            // Map minimal fields we need
+            const mapped = arr.map((t: any) => ({
+              ...t,
+              id: t._id || t.id,
+              subjects: Array.isArray(t.subjects) ? t.subjects.filter((s: any) => s && typeof s === 'object').map((s: any) => ({
+                ...s,
+                id: s._id || s.id
+              })) : []
+            }));
+
+            const refreshed = mapped.find((t: any) => t.id === teacherId);
+            const ok = refreshed && Array.isArray(refreshed.subjects) && refreshed.subjects.length >= subjectIds.length;
+            console.log(`Refresh attempt ${attempt} → confirmed:`, ok, refreshed?.subjects);
+
+            if (ok) {
+              setTeachers(mapped);
+              serverConfirmed = true;
+              break;
+            }
+          } catch (e) {
+            console.warn('Refresh attempt failed:', e);
+          }
+        }
+
+        if (!serverConfirmed) {
+          console.warn('Server did not confirm assignment yet; keeping optimistic UI state.');
+        }
+
         alert('Subjects assigned successfully!');
       } else {
-        const errorData = await response.json();
-        console.error('Assignment failed:', errorData);
-        alert(`Failed to assign subjects: ${errorData.message || 'Unknown error'}`);
+        console.error('Assignment failed:', responseData);
+        alert(`Failed to assign subjects: ${responseData.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Failed to assign subjects:', error);
@@ -264,8 +412,18 @@ const TeacherManagement = () => {
   };
 
   const openAssignDialog = (teacher: Teacher) => {
+    console.log('Opening assign dialog for teacher:', teacher);
+    console.log('Teacher subjects:', teacher.subjects);
+    
     setAssigningTeacher(teacher);
-    setSelectedSubjects(teacher.subjects.map(s => s._id || s.id));
+    
+    // Map existing subjects to their IDs properly
+    const existingSubjectIds = teacher.subjects
+      .filter(subject => subject && (subject._id || subject.id))
+      .map(subject => subject._id || subject.id);
+    
+    console.log('Existing subject IDs:', existingSubjectIds);
+    setSelectedSubjects(existingSubjectIds);
     setIsAssignDialogOpen(true);
   };
 
@@ -276,12 +434,18 @@ const TeacherManagement = () => {
       return;
     }
 
+    console.log('Dialog submit - assigningTeacher:', assigningTeacher);
+    console.log('Dialog submit - selectedSubjects:', selectedSubjects);
+
     // Use _id if id is not available (backend returns _id)
     const teacherId = assigningTeacher.id || (assigningTeacher as any)._id;
     if (!teacherId) {
       alert('Invalid teacher ID');
       return;
     }
+
+    console.log('Final teacher ID:', teacherId);
+    console.log('Final selected subjects:', selectedSubjects);
 
     try {
       await handleAssignSubjects(teacherId, selectedSubjects);
@@ -305,42 +469,47 @@ const TeacherManagement = () => {
   const totalSubjects = teachers.reduce((total, teacher) => total + teacher.subjects.length, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="space-y-8 p-6">
-        {/* Hero Section with Teacher Stats */}
+        {/* Hero Section with Vibrant Stats */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-400 opacity-30 rounded-3xl"></div>
-          <div className="relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-sky-200">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 opacity-20 rounded-3xl"></div>
+          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-4xl font-bold text-sky-900">
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
                   Teacher Management
                 </h1>
-                <p className="text-sky-800 mt-2 text-lg">Manage teachers and their subject assignments</p>
+                <p className="text-gray-700 mt-3 text-xl font-medium">Manage teachers and their subject assignments with style</p>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-xl">
+                  <Users className="w-12 h-12 text-white" />
+                </div>
               </div>
             </div>
 
-            {/* Teacher Stats Grid */}
+            {/* Vibrant Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <Users className="w-6 h-6 text-sky-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">Total Teachers</p>
-                      <p className="text-3xl font-bold text-sky-900">{totalTeachers}</p>
+                      <p className="text-white/90 text-sm font-medium">Total Teachers</p>
+                      <p className="text-4xl font-bold text-white">{totalTeachers}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-sky-700 text-sm">
-                    <GraduationCap className="w-4 h-4 mr-1" />
+                  <div className="flex items-center text-white/80 text-sm">
+                    <GraduationCap className="w-4 h-4 mr-2" />
                     <span>Faculty members</span>
                   </div>
                 </div>
@@ -350,21 +519,21 @@ const TeacherManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <CheckCircle className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-green-700 text-sm font-medium">Active Teachers</p>
-                      <p className="text-3xl font-bold text-green-900">{activeTeachers}</p>
+                      <p className="text-white/90 text-sm font-medium">Active Teachers</p>
+                      <p className="text-4xl font-bold text-white">{activeTeachers}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-green-700 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <div className="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"></div>
                     <span>Currently teaching</span>
                   </div>
                 </div>
@@ -374,21 +543,21 @@ const TeacherManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <BookOpen className="w-6 h-6 text-purple-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-purple-700 text-sm font-medium">Total Subjects</p>
-                      <p className="text-3xl font-bold text-purple-900">{totalSubjects}</p>
+                      <p className="text-white/90 text-sm font-medium">Total Subjects</p>
+                      <p className="text-4xl font-bold text-white">{totalSubjects}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-purple-700 text-sm">
-                    <BookOpen className="w-4 h-4 mr-1" />
+                  <div className="flex items-center text-white/80 text-sm">
+                    <BookOpen className="w-4 h-4 mr-2" />
                     <span>Subject assignments</span>
                   </div>
                 </div>
@@ -398,18 +567,18 @@ const TeacherManagement = () => {
         </div>
 
         {/* Action Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white/40 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-sky-200">
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20">
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sky-600 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-600 w-5 h-5" />
               <Input
                 placeholder="Search teachers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-64 border-sky-200 focus:border-sky-400"
+                className="pl-12 w-64 border-purple-200 focus:border-purple-400 bg-white/80 rounded-xl"
               />
             </div>
-            <Button variant="outline" className="border-sky-200 text-sky-700 hover:bg-sky-50">
+            <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl">
               <Filter className="w-4 h-4 mr-2" />
               Filter
             </Button>
@@ -417,94 +586,94 @@ const TeacherManagement = () => {
           
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl px-8 py-3 shadow-xl hover:shadow-2xl transition-all duration-300">
+                <Plus className="w-5 h-5 mr-2" />
                 Add Teacher
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-white/90 border-sky-200 backdrop-blur-xl">
+            <DialogContent className="max-w-2xl bg-white/95 border-purple-200 backdrop-blur-xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-semibold text-sky-900">Add New Teacher</DialogTitle>
-                <DialogDescription className="text-sky-700">
+                <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Add New Teacher</DialogTitle>
+                <DialogDescription className="text-gray-600 text-lg">
                   Create a new teacher account and assign subjects.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddTeacher} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="fullName" className="text-sky-700">Full Name</Label>
+                    <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name</Label>
                     <Input
                       id="fullName"
                       value={newTeacher.fullName}
                       onChange={(e) => setNewTeacher({ ...newTeacher, fullName: e.target.value })}
-                      className="border-sky-200 focus:border-sky-400"
+                      className="border-purple-200 focus:border-purple-400 rounded-xl"
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-sky-700">Email</Label>
+                    <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                     <Input
                       id="email"
                       type="email"
                       value={newTeacher.email}
                       onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })}
-                      className="border-sky-200 focus:border-sky-400"
+                      className="border-purple-200 focus:border-purple-400 rounded-xl"
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-sky-700">Phone</Label>
+                    <Label htmlFor="phone" className="text-gray-700 font-medium">Phone</Label>
                     <Input
                       id="phone"
                       value={newTeacher.phone}
                       onChange={(e) => setNewTeacher({ ...newTeacher, phone: e.target.value })}
-                      className="border-sky-200 focus:border-sky-400"
+                      className="border-purple-200 focus:border-purple-400 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="department" className="text-sky-700">Department</Label>
+                    <Label htmlFor="department" className="text-gray-700 font-medium">Department</Label>
                     <Input
                       id="department"
                       value={newTeacher.department}
                       onChange={(e) => setNewTeacher({ ...newTeacher, department: e.target.value })}
-                      className="border-sky-200 focus:border-sky-400"
+                      className="border-purple-200 focus:border-purple-400 rounded-xl"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="qualifications" className="text-sky-700">Qualifications</Label>
+                  <Label htmlFor="qualifications" className="text-gray-700 font-medium">Qualifications</Label>
                   <Textarea
                     id="qualifications"
                     value={newTeacher.qualifications}
                     onChange={(e) => setNewTeacher({ ...newTeacher, qualifications: e.target.value })}
-                    className="border-sky-200 focus:border-sky-400"
+                    className="border-purple-200 focus:border-purple-400 rounded-xl"
                     rows={3}
                   />
                 </div>
                 <div>
-                  <Label className="text-sky-700">Assign Subjects</Label>
+                  <Label className="text-gray-700 font-medium">Assign Subjects</Label>
                   <Select onValueChange={(value) => {
                     if (!newTeacher.subjects.includes(value)) {
                       setNewTeacher({ ...newTeacher, subjects: [...newTeacher.subjects, value] });
                     }
                   }}>
-                    <SelectTrigger className="border-sky-200 focus:border-sky-400">
+                    <SelectTrigger className="border-purple-200 focus:border-purple-400 rounded-xl">
                       <SelectValue placeholder="Select subjects to assign" />
                     </SelectTrigger>
                     <SelectContent>
                       {subjects.map(subject => (
-                        <SelectItem key={subject.id} value={subject.id}>
+                        <SelectItem key={subject.id || subject._id} value={subject.id || subject._id}>
                           {subject.name} ({subject.code})
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {newTeacher.subjects.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                       {newTeacher.subjects.map(subjectId => {
                         const subject = subjects.find(s => s.id === subjectId);
                         return subject ? (
-                          <Badge key={subjectId} className="bg-sky-100 text-sky-800">
+                          <Badge key={subjectId} className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border-purple-200 rounded-lg">
                             {subject.name}
                             <button
                               type="button"
@@ -512,7 +681,7 @@ const TeacherManagement = () => {
                                 ...newTeacher, 
                                 subjects: newTeacher.subjects.filter(id => id !== subjectId) 
                               })}
-                              className="ml-2 text-sky-600 hover:text-sky-800"
+                              className="ml-2 text-purple-600 hover:text-purple-800"
                             >
                               ×
                             </button>
@@ -523,10 +692,10 @@ const TeacherManagement = () => {
                   )}
                 </div>
                 <div className="flex justify-end space-x-3">
-                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)} className="rounded-xl">
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700">
+                  <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl">
                     Add Teacher
                   </Button>
                 </div>
@@ -537,132 +706,146 @@ const TeacherManagement = () => {
 
         {/* Teachers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTeachers.map((teacher, index) => (
-            <motion.div
-              key={teacher.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-400/10 to-blue-500/10 backdrop-blur-sm"></div>
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-sky-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {teacher.fullName.split(' ').map(n => n[0]).join('')}
+          {filteredTeachers.map((teacher, index) => {
+            const gradientColors = [
+              'from-purple-500 to-pink-500',
+              'from-blue-500 to-cyan-500', 
+              'from-emerald-500 to-teal-500',
+              'from-orange-500 to-red-500',
+              'from-violet-500 to-purple-500',
+              'from-indigo-500 to-blue-500'
+            ];
+            const gradient = gradientColors[index % gradientColors.length];
+            
+            return (
+              <motion.div
+                key={teacher.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/20"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
+                        {teacher.fullName.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900 text-xl">{teacher.fullName}</h3>
+                        <p className="text-gray-600 text-sm">{teacher.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-sky-900 text-lg">{teacher.fullName}</h3>
-                      <p className="text-sky-700 text-sm">{teacher.email}</p>
-                    </div>
+                    <Badge className={`${teacher.isActive ? 'bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 border-emerald-200' : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-200'} rounded-lg px-3 py-1`}>
+                      {teacher.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
                   </div>
-                  <Badge className={`${teacher.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {teacher.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
 
-                <div className="space-y-3 mb-6">
-                  {teacher.phone && (
-                    <div className="flex items-center text-sm text-sky-700">
-                      <Phone className="w-4 h-4 mr-3 text-sky-600" />
-                      <span>{teacher.phone}</span>
-                    </div>
-                  )}
-                  {teacher.department && (
-                    <div className="flex items-center text-sm text-sky-700">
-                      <GraduationCap className="w-4 h-4 mr-3 text-sky-600" />
-                      <span>{teacher.department}</span>
-                    </div>
-                  )}
-                  {teacher.qualifications && (
-                    <div className="flex items-center text-sm text-sky-700">
-                      <BookOpen className="w-4 h-4 mr-3 text-sky-600" />
-                      <span className="truncate">{teacher.qualifications}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-semibold text-sky-900 text-sm mb-2">Subjects:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {teacher.subjects.map(subject => (
-                      <Badge key={subject.id} variant="outline" className="text-xs border-sky-200 text-sky-700">
-                        {subject.name}
-                      </Badge>
-                    ))}
-                    {teacher.subjects.length === 0 && (
-                      <span className="text-xs text-sky-500">No subjects assigned</span>
+                  <div className="space-y-4 mb-6">
+                    {teacher.phone && (
+                      <div className="flex items-center text-sm text-gray-700 bg-white/50 rounded-xl p-3">
+                        <Phone className="w-4 h-4 mr-3 text-purple-600" />
+                        <span className="font-medium">{teacher.phone}</span>
+                      </div>
+                    )}
+                    {teacher.department && (
+                      <div className="flex items-center text-sm text-gray-700 bg-white/50 rounded-xl p-3">
+                        <GraduationCap className="w-4 h-4 mr-3 text-blue-600" />
+                        <span className="font-medium">{teacher.department}</span>
+                      </div>
+                    )}
+                    {teacher.qualifications && (
+                      <div className="flex items-center text-sm text-gray-700 bg-white/50 rounded-xl p-3">
+                        <BookOpen className="w-4 h-4 mr-3 text-emerald-600" />
+                        <span className="truncate font-medium">{teacher.qualifications}</span>
+                      </div>
                     )}
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-sky-200">
-                  <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline" className="border-sky-200 text-sky-700 hover:bg-sky-50">
-                      <Eye className="w-3 h-3" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="border-sky-200 text-sky-700 hover:bg-sky-50"
-                      onClick={() => {
-                        setEditingTeacher(teacher);
-                        setIsEditDialogOpen(true);
-                      }}
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="border-green-200 text-green-700 hover:bg-green-50"
-                      onClick={() => openAssignDialog(teacher)}
-                    >
-                      <BookOpen className="w-3 h-3" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="border-red-200 text-red-700 hover:bg-red-50"
-                      onClick={() => handleDeleteTeacher(teacher.id, teacher.fullName)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                  <div className="mb-6">
+                    <h4 className="font-bold text-gray-900 text-sm mb-3">Subjects:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {teacher.subjects.map(subject => (
+                        <Badge key={subject.id} className={`bg-gradient-to-r ${gradient} text-white border-0 rounded-lg px-3 py-1 text-xs font-medium`}>
+                          {subject.name}
+                        </Badge>
+                      ))}
+                      {teacher.subjects.length === 0 && (
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded-lg px-3 py-1">No subjects assigned</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex items-center space-x-2">
+                      <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50 rounded-xl"
+                        onClick={() => {
+                          setEditingTeacher(teacher);
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 rounded-xl"
+                        onClick={() => openAssignDialog(teacher)}
+                      >
+                        <BookOpen className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-red-200 text-red-700 hover:bg-red-50 rounded-xl"
+                        onClick={() => handleDeleteTeacher(teacher.id, teacher.fullName)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {filteredTeachers.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-sky-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-sky-700 mb-2">No teachers found</h3>
-            <p className="text-sky-600">Try adjusting your search criteria or add a new teacher.</p>
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <Users className="w-12 h-12 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">No teachers found</h3>
+            <p className="text-gray-600 text-lg">Try adjusting your search criteria or add a new teacher.</p>
           </div>
         )}
 
         {/* Subject Assignment Dialog */}
         <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
-          <DialogContent className="max-w-2xl bg-white/90 border-sky-200 backdrop-blur-xl">
+          <DialogContent className="max-w-2xl bg-white/95 border-purple-200 backdrop-blur-xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-sky-900">
+              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Assign Subjects to {assigningTeacher?.fullName}
               </DialogTitle>
-              <DialogDescription className="text-sky-700">
+              <DialogDescription className="text-gray-600 text-lg">
                 Select the subjects this teacher will teach.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAssignDialogSubmit} className="space-y-6">
               <div>
-                <Label className="text-sky-700">Available Subjects</Label>
-                <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
+                <Label className="text-gray-700 font-medium text-lg">Available Subjects</Label>
+                <div className="mt-3 space-y-3 max-h-60 overflow-y-auto">
                   {subjects.map(subject => {
                     const subjectId = subject._id || subject.id;
                     return (
-                      <div key={subjectId} className="flex items-center space-x-3 p-3 bg-sky-50 rounded-lg">
+                      <div key={subjectId} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 hover:border-purple-200 transition-colors">
                         <input
                           type="checkbox"
                           id={`subject-${subjectId}`}
@@ -674,11 +857,11 @@ const TeacherManagement = () => {
                               setSelectedSubjects(selectedSubjects.filter(id => id !== subjectId));
                             }
                           }}
-                          className="w-4 h-4 text-sky-600 border-sky-300 rounded focus:ring-sky-500"
+                          className="w-5 h-5 text-purple-600 border-purple-300 rounded focus:ring-purple-500"
                         />
                         <label htmlFor={`subject-${subjectId}`} className="flex-1 cursor-pointer">
-                          <div className="font-medium text-sky-900">{subject.name}</div>
-                          <div className="text-sm text-sky-600">{subject.code} - {subject.description}</div>
+                          <div className="font-bold text-gray-900 text-lg">{subject.name}</div>
+                          <div className="text-sm text-gray-600">{subject.code} - {subject.description}</div>
                         </label>
                       </div>
                     );
@@ -686,10 +869,10 @@ const TeacherManagement = () => {
                 </div>
               </div>
               <div className="flex justify-end space-x-3">
-                <Button type="button" variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsAssignDialogOpen(false)} className="rounded-xl">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700">
+                <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl">
                   Assign Subjects
                 </Button>
               </div>

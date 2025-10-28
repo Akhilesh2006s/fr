@@ -85,7 +85,20 @@ const AnalyticsDashboard = () => {
         }
       });
       const data = await response.json();
-      setAnalytics(data);
+      // Ensure all arrays exist with fallback to empty arrays
+      setAnalytics({
+        totalStudents: data.totalStudents || 0,
+        activeStudents: data.activeStudents || 0,
+        totalClasses: data.totalClasses || 0,
+        totalVideos: data.totalVideos || 0,
+        totalQuizzes: data.totalQuizzes || 0,
+        totalAssessments: data.totalAssessments || 0,
+        averageScore: data.averageScore || 0,
+        completionRate: data.completionRate || 0,
+        recentActivity: data.recentActivity || [],
+        classPerformance: data.classPerformance || [],
+        topPerformers: data.topPerformers || []
+      });
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
       // Set mock data for development
@@ -266,7 +279,7 @@ const AnalyticsDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analytics.classPerformance.map((classData, index) => (
+                {(analytics.classPerformance || []).map((classData, index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-semibold">
@@ -303,7 +316,7 @@ const AnalyticsDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analytics.topPerformers.map((performer, index) => (
+                {(analytics.topPerformers || []).map((performer, index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
@@ -337,7 +350,7 @@ const AnalyticsDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.recentActivity.map((activity) => (
+              {(analytics.recentActivity || []).map((activity) => (
                 <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${

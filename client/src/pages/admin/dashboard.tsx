@@ -33,7 +33,6 @@ import {
 import UserManagement from '@/components/admin/user-management';
 import ClassManagement from '@/components/admin/class-management';
 import ClassDashboard from '@/components/admin/class-dashboard';
-import AnalyticsDashboard from '@/components/admin/analytics-dashboard';
 import TeacherManagement from '@/components/admin/teacher-management';
 import SubjectManagement from '@/components/admin/subject-management';
 import ExamManagement from '@/components/admin/exam-management';
@@ -95,6 +94,9 @@ const AdminDashboard = () => {
     totalStudents: 150,
     totalTeachers: 0,
     totalClasses: 8,
+    totalVideos: 0,
+    totalQuizzes: 25,
+    totalAssessments: 0,
     activeUsers: 45,
     recentActivity: [
       {
@@ -196,6 +198,7 @@ const AdminDashboard = () => {
       // Set mock data for development
       setStats({
         totalStudents: 150,
+        totalTeachers: 25,
         totalClasses: 8,
         totalVideos: 45,
         totalQuizzes: 25,
@@ -233,10 +236,13 @@ const AdminDashboard = () => {
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sky-700">Loading...</p>
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">Loading...</h2>
+          <p className="text-gray-600">Preparing your admin dashboard</p>
         </div>
       </div>
     );
@@ -248,18 +254,18 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50 flex">
-      {/* Modern Sidebar */}
-      <div className="w-64 bg-white/40 backdrop-blur-xl shadow-lg border-r border-sky-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex">
+      {/* Colorful Modern Sidebar */}
+      <div className="w-64 bg-white/60 backdrop-blur-xl shadow-2xl border-r border-white/20">
         {/* Logo Section */}
-        <div className="p-6 border-b border-sky-200">
+        <div className="p-6 border-b border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-sky-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">AS</span>
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-xl">
+              <span className="text-white font-bold text-xl">AS</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-sky-900">ALSI STUD</h1>
-              <p className="text-xs text-sky-700">Admin Panel</p>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">ALSI STUD</h1>
+              <p className="text-xs text-gray-600 font-medium">Admin Panel</p>
             </div>
           </div>
         </div>
@@ -268,10 +274,10 @@ const AdminDashboard = () => {
         <nav className="p-4 space-y-2">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'overview' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 border-r-4 border-purple-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-900'
             }`}
           >
             <BarChart3 className="w-5 h-5" />
@@ -280,10 +286,10 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('students')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'students' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-900 border-r-4 border-blue-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 hover:text-blue-900'
             }`}
           >
             <Users className="w-5 h-5" />
@@ -292,10 +298,10 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('classes')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'classes' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-900 border-r-4 border-emerald-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-900'
             }`}
           >
             <GraduationCap className="w-5 h-5" />
@@ -304,10 +310,10 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('teachers')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'teachers' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-orange-100 to-red-100 text-orange-900 border-r-4 border-orange-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-900'
             }`}
           >
             <Users className="w-5 h-5" />
@@ -316,10 +322,10 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('subjects')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'subjects' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-violet-100 to-purple-100 text-violet-900 border-r-4 border-violet-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-50 hover:text-violet-900'
             }`}
           >
             <BookOpen className="w-5 h-5" />
@@ -328,23 +334,22 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('exams')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'exams' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-900 border-r-4 border-indigo-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-blue-50 hover:text-indigo-900'
             }`}
           >
             <FileText className="w-5 h-5" />
             <span className="font-medium">Weekend Exams</span>
           </button>
           
-          
           <button
             onClick={() => setActiveTab('videos')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'videos' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-pink-100 to-rose-100 text-pink-900 border-r-4 border-pink-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:text-pink-900'
             }`}
           >
             <Play className="w-5 h-5" />
@@ -353,38 +358,27 @@ const AdminDashboard = () => {
           
           <button
             onClick={() => setActiveTab('assessments')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 backdrop-blur-sm ${
               activeTab === 'assessments' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
+                ? 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-900 border-r-4 border-amber-500 shadow-lg' 
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 hover:text-amber-900'
             }`}
           >
             <Target className="w-5 h-5" />
             <span className="font-medium">Assessments</span>
           </button>
           
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 backdrop-blur-sm ${
-              activeTab === 'analytics' 
-                ? 'bg-sky-100 text-sky-900 border-r-2 border-sky-500 shadow-lg' 
-                : 'text-sky-700 hover:bg-sky-50 hover:text-sky-900'
-            }`}
-          >
-            <TrendingUp className="w-5 h-5" />
-            <span className="font-medium">Analytics</span>
-          </button>
         </nav>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <div className="bg-white/60 backdrop-blur-xl border-b border-sky-200 px-6 py-4">
+        <div className="bg-white/70 backdrop-blur-xl border-b border-white/20 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-sky-900 capitalize">{activeTab}</h2>
-              <p className="text-sky-700">Manage your learning platform</p>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent capitalize">{activeTab}</h2>
+              <p className="text-gray-600 text-lg font-medium">Manage your learning platform with style</p>
             </div>
             <div className="flex items-center space-x-4">
               <Button 
@@ -407,7 +401,7 @@ const AdminDashboard = () => {
                     window.location.href = '/signin';
                   }
                 }}
-                className="border-sky-200 text-sky-800 hover:bg-sky-50 backdrop-blur-sm"
+                className="border-purple-200 text-purple-800 hover:bg-purple-50 backdrop-blur-sm rounded-xl"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -419,126 +413,211 @@ const AdminDashboard = () => {
         {/* Content Area */}
         <div className="flex-1 p-6 overflow-auto">
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-            {/* Professional Stats Cards */}
+            <div className="space-y-8">
+            {/* Colorful Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Total Students</p>
-                      <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalStudents}</p>
-                      <p className="text-sm text-green-600 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +12% this month
-                      </p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Users className="w-6 h-6 text-blue-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Active Classes</p>
-                      <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalClasses}</p>
-                      <p className="text-sm text-green-600 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +8% this month
-                      </p>
-                    </div>
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <GraduationCap className="w-6 h-6 text-green-600" />
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Total Students</p>
+                      <p className="text-4xl font-bold text-white">{stats.totalStudents}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+12% this month</span>
+                  </div>
+                </div>
+              </motion.div>
 
-
-              <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Active Users</p>
-                      <p className="text-3xl font-bold text-gray-900 mt-1">{stats.activeUsers}</p>
-                      <p className="text-sm text-green-600 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +18% this month
-                      </p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <GraduationCap className="w-8 h-8 text-white" />
                     </div>
-                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-indigo-600" />
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Active Classes</p>
+                      <p className="text-4xl font-bold text-white">{stats.totalClasses}</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+8% this month</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Activity className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Active Users</p>
+                      <p className="text-4xl font-bold text-white">{stats.activeUsers}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+18% this month</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Users className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Teachers</p>
+                      <p className="text-4xl font-bold text-white">{stats.totalTeachers || 0}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+5% this month</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Play className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Videos</p>
+                      <p className="text-4xl font-bold text-white">{stats.totalVideos || 0}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+15% this month</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="group relative overflow-hidden bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Target className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white/90 text-sm font-medium">Assessments</p>
+                      <p className="text-4xl font-bold text-white">{stats.totalAssessments || 0}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <span>+22% this month</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
             {/* Admin-Specific Data Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2 text-blue-900">
-                    <Users className="w-5 h-5" />
-                    <span>Your Students</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-blue-700">Total Students Assigned</span>
-                      <span className="text-2xl font-bold text-blue-900">{stats.totalStudents}</span>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl p-8 shadow-xl"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
-                    <div className="text-xs text-blue-600">
+                    <h3 className="text-2xl font-bold text-white">Your Students</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/90 text-lg font-medium">Total Students Assigned</span>
+                      <span className="text-4xl font-bold text-white">{stats.totalStudents}</span>
+                    </div>
+                    <div className="text-white/80 text-sm">
                       These are the students specifically assigned to your admin account
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
 
-              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2 text-purple-900">
-                    <GraduationCap className="w-5 h-5" />
-                    <span>Your Teachers</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-purple-700">Total Teachers Assigned</span>
-                      <span className="text-2xl font-bold text-purple-900">{stats.totalTeachers || 0}</span>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-8 shadow-xl"
+              >
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <GraduationCap className="w-8 h-8 text-white" />
                     </div>
-                    <div className="text-xs text-purple-600">
+                    <h3 className="text-2xl font-bold text-white">Your Teachers</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/90 text-lg font-medium">Total Teachers Assigned</span>
+                      <span className="text-4xl font-bold text-white">{stats.totalTeachers || 0}</span>
+                    </div>
+                    <div className="text-white/80 text-sm">
                       These are the teachers specifically assigned to your admin account
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                {stats.recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      {activity.type === 'path' && <BookOpen className="w-4 h-4 text-blue-600" />}
-                      {activity.type === 'user' && <Users className="w-4 h-4 text-blue-600" />}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                      <p className="text-xs text-gray-500">by {activity.user} • {activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Recent Activity removed per request */}
             </div>
           )}
 
@@ -549,7 +628,7 @@ const AdminDashboard = () => {
           {activeTab === 'exams' && <ExamManagement />}
           {activeTab === 'videos' && <VideoManagement />}
           {activeTab === 'assessments' && <AssessmentManagement />}
-          {activeTab === 'analytics' && <AnalyticsDashboard />}
+          {/* Analytics tab removed */}
         </div>
       </div>
     </div>

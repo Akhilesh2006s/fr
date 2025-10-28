@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useState } from 'react';
+import DetailedAnalysis from './detailed-analysis';
 import { 
   Trophy, 
   Target, 
@@ -12,11 +14,27 @@ import {
   BookOpen,
   Calculator,
   TrendingUp,
-  Award
+  Award,
+  BarChart3,
+  Eye
 } from 'lucide-react';
+
+interface Question {
+  _id: string;
+  questionText: string;
+  questionImage?: string;
+  questionType: 'mcq' | 'multiple' | 'integer';
+  options?: string[];
+  correctAnswer: string | string[];
+  marks: number;
+  negativeMarks: number;
+  explanation?: string;
+  subject: 'maths' | 'physics' | 'chemistry';
+}
 
 interface ExamResult {
   examId: string;
+  examTitle?: string;
   totalQuestions: number;
   correctAnswers: number;
   wrongAnswers: number;
@@ -30,6 +48,8 @@ interface ExamResult {
     physics: { correct: number; total: number; marks: number };
     chemistry: { correct: number; total: number; marks: number };
   };
+  answers?: Record<string, any>;
+  questions?: Question[];
 }
 
 interface ExamResultsProps {
@@ -41,6 +61,17 @@ interface ExamResultsProps {
 }
 
 export default function ExamResults({ result, examTitle, onRetake, onViewAnalysis, onBack }: ExamResultsProps) {
+  const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false);
+
+  if (showDetailedAnalysis) {
+    return (
+      <DetailedAnalysis 
+        result={result}
+        examTitle={examTitle}
+        onBack={() => setShowDetailedAnalysis(false)}
+      />
+    );
+  }
   const getGrade = (percentage: number) => {
     if (percentage >= 90) return { grade: 'A+', color: 'text-green-600', bgColor: 'bg-green-100' };
     if (percentage >= 80) return { grade: 'A', color: 'text-green-600', bgColor: 'bg-green-100' };
@@ -331,7 +362,12 @@ export default function ExamResults({ result, examTitle, onRetake, onViewAnalysi
           <Button variant="outline" onClick={onBack}>
             Back to Dashboard
           </Button>
-          <Button variant="outline" onClick={onViewAnalysis}>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowDetailedAnalysis(true)}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-lg"
+          >
+            <Eye className="w-4 h-4 mr-2" />
             View Detailed Analysis
           </Button>
           <Button onClick={onRetake} className="bg-primary hover:bg-primary/90">

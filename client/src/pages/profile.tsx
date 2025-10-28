@@ -42,10 +42,8 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch user dashboard data
-  const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ["/api/users", MOCK_USER_ID, "dashboard"],
-  });
+  // Removed problematic dashboard query that was causing 404 errors
+  // Dashboard data is not needed for profile page
 
   // Fetch user's test attempts for achievements
   const { data: attempts = [] } = useQuery({
@@ -59,7 +57,7 @@ export default function Profile() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users", MOCK_USER_ID, "dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", MOCK_USER_ID] });
       setIsEditing(false);
       setEditedProfile({});
       toast({

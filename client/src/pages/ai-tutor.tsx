@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,19 +33,66 @@ export default function AITutor() {
     currentTopic?: string;
     recentTest?: string;
   }>({});
+  const [user, setUser] = useState<any>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const isMobile = useIsMobile();
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          console.log('No auth token found, using mock data');
+          setUser({ 
+            fullName: "Student", 
+            email: "student@example.com", 
+            educationStream: "JEE" 
+          });
+          setIsLoadingUser(false);
+          return;
+        }
+
+        const response = await fetch('https://asli-stud-back-production.up.railway.app/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.user);
+        } else {
+          console.log('Auth check failed, using mock data');
+          setUser({ 
+            fullName: "Student", 
+            email: "student@example.com", 
+            educationStream: "JEE" 
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        setUser({ 
+          fullName: "Student", 
+          email: "student@example.com", 
+          educationStream: "JEE" 
+        });
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   // Fetch user's chat sessions
   const { data: chatSessions = [], isLoading: sessionsLoading } = useQuery({
     queryKey: ["/api/users", MOCK_USER_ID, "chat-sessions"],
   });
 
-  // Fetch user data for context
-  const { data: dashboardData } = useQuery({
-    queryKey: ["/api/users", MOCK_USER_ID, "dashboard"],
-  });
-
-  const user = (dashboardData as any)?.user;
+  // Removed problematic dashboard query that was causing 404 errors
+  // User data is handled by other queries
   const recentSession = (chatSessions as any[])[0];
 
   const tutorFeatures = [
@@ -106,6 +153,24 @@ export default function AITutor() {
       description: "Maintain a daily study routine for best results"
     }
   ];
+
+  if (isLoadingUser) {
+    return (
+      <>
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+          <div className="space-y-8">
+            <Skeleton className="h-48 w-full rounded-2xl" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

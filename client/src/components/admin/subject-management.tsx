@@ -243,42 +243,47 @@ const SubjectManagement = () => {
   const assignedSubjects = Array.isArray(subjects) ? subjects.filter(s => s.teacher).length : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="space-y-8 p-6">
-        {/* Hero Section with Subject Stats */}
+        {/* Hero Section with Vibrant Subject Stats */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-400 opacity-30 rounded-3xl"></div>
-          <div className="relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-sky-200">
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 opacity-20 rounded-3xl"></div>
+          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-4xl font-bold text-sky-900">
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                   Subject Management
                 </h1>
-                <p className="text-sky-800 mt-2 text-lg">Manage subjects and assign them to teachers</p>
+                <p className="text-gray-700 mt-3 text-xl font-medium">Manage subjects and their assignments with style</p>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-24 h-24 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center shadow-xl">
+                  <BookOpen className="w-12 h-12 text-white" />
+                </div>
               </div>
             </div>
 
-            {/* Subject Stats Grid */}
+            {/* Vibrant Subject Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-violet-500 to-purple-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <BookOpen className="w-6 h-6 text-sky-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">Total Subjects</p>
-                      <p className="text-3xl font-bold text-sky-900">{totalSubjects}</p>
+                      <p className="text-white/90 text-sm font-medium">Total Subjects</p>
+                      <p className="text-4xl font-bold text-white">{totalSubjects}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-sky-700 text-sm">
-                    <BookOpen className="w-4 h-4 mr-1" />
+                  <div className="flex items-center text-white/80 text-sm">
+                    <BookOpen className="w-4 h-4 mr-2" />
                     <span>Available courses</span>
                   </div>
                 </div>
@@ -288,21 +293,21 @@ const SubjectManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <CheckCircle className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-green-700 text-sm font-medium">Active Subjects</p>
-                      <p className="text-3xl font-bold text-green-900">{activeSubjects}</p>
+                      <p className="text-white/90 text-sm font-medium">Active Subjects</p>
+                      <p className="text-4xl font-bold text-white">{activeSubjects}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-green-700 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <div className="flex items-center text-white/80 text-sm">
+                    <div className="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"></div>
                     <span>Currently offered</span>
                   </div>
                 </div>
@@ -312,21 +317,21 @@ const SubjectManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <Users className="w-6 h-6 text-purple-600" />
+                    <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-purple-700 text-sm font-medium">Assigned Subjects</p>
-                      <p className="text-3xl font-bold text-purple-900">{assignedSubjects}</p>
+                      <p className="text-white/90 text-sm font-medium">Assigned Subjects</p>
+                      <p className="text-4xl font-bold text-white">{assignedSubjects}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-purple-700 text-sm">
-                    <Users className="w-4 h-4 mr-1" />
+                  <div className="flex items-center text-white/80 text-sm">
+                    <Users className="w-4 h-4 mr-2" />
                     <span>With teachers</span>
                   </div>
                 </div>

@@ -37,6 +37,10 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
   // Get chat sessions
   const { data: sessions, isLoading } = useQuery({
     queryKey: ["/api/users", userId, "chat-sessions"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `https://asli-stud-back-production.up.railway.app/api/users/${userId}/chat-sessions`);
+      return response.json();
+    },
   });
 
   const currentSession = sessions?.[0];

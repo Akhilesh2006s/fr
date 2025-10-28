@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
-import StudentExam from '@/components/student-exam';
+import AnimatedExam from '@/components/animated-exam';
 import ExamResults from '@/components/exam-results';
 
 interface Question {
@@ -295,9 +295,9 @@ export default function StudentExams() {
   });
 
   if (isTakingExam && currentExam) {
-    console.log('Rendering StudentExam component');
+    console.log('Rendering AnimatedExam component');
     return (
-      <StudentExam 
+      <AnimatedExam 
         examId={currentExam._id}
         onComplete={handleExamComplete}
         onExit={handleExitExam}

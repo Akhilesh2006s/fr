@@ -269,26 +269,25 @@ const UserManagement = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="space-y-8 p-6">
-        {/* Hero Section with Enhanced Stats */}
+        {/* Hero Section with Vibrant Student Stats */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-400 opacity-30 rounded-3xl"></div>
-          <div className="relative bg-white/60 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-sky-200">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 opacity-20 rounded-3xl"></div>
+          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="flex items-center justify-between mb-8">
-            <div>
-                <h1 className="text-4xl font-bold text-sky-900">
+              <div>
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 bg-clip-text text-transparent">
                   Student Management
                 </h1>
-                <p className="text-sky-800 mt-2 text-lg">Comprehensive student oversight and analytics</p>
+                <p className="text-gray-700 mt-3 text-xl font-medium">Manage students and their academic progress with style</p>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shadow-xl">
+                  <Users className="w-12 h-12 text-white" />
+                </div>
+              </div>
             </div>
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="flex items-center space-x-2 bg-sky-100 backdrop-blur-sm px-4 py-2 rounded-full border border-sky-200">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sky-800 font-medium">System Online</span>
-            </div>
-          </div>
-        </div>
         
             {/* Enhanced Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -296,20 +295,20 @@ const UserManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <Users className="w-6 h-6 text-sky-600" />
+                    <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-lg">
+                      <Users className="w-6 h-6 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">Total Students</p>
-                      <p className="text-3xl font-bold text-sky-900">{students.length}</p>
+                      <p className="text-gray-700 text-sm font-medium">Total Students</p>
+                      <p className="text-3xl font-bold text-gray-900">{students.length}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-sky-700 text-sm">
+                  <div className="flex items-center text-gray-600 text-sm">
                     <TrendingUp className="w-4 h-4 mr-1" />
                     <span>+12% this month</span>
                   </div>
@@ -320,71 +319,71 @@ const UserManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-emerald-500/20 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <CheckCircle className="w-6 h-6 text-sky-600" />
-            </div>
+                    <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
+                      <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">Active Students</p>
-                      <p className="text-3xl font-bold text-sky-900">{students.filter(s => s.status === 'active').length}</p>
-            </div>
-          </div>
-                  <div className="flex items-center text-sky-700 text-sm">
+                      <p className="text-gray-700 text-sm font-medium">Active Students</p>
+                      <p className="text-3xl font-bold text-gray-900">{students.filter(s => s.status === 'active').length}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-600 text-sm">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                     <span>Online now</span>
-          </div>
-        </div>
+                  </div>
+                </div>
               </motion.div>
               
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-500/20 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <GraduationCap className="w-6 h-6 text-sky-600" />
-            </div>
+                    <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-lg">
+                      <GraduationCap className="w-6 h-6 text-white" />
+                    </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">Active Classes</p>
-                      <p className="text-3xl font-bold text-sky-900">{new Set(students.map(s => s.classNumber)).size}</p>
-            </div>
-          </div>
-                  <div className="flex items-center text-sky-700 text-sm">
+                      <p className="text-gray-700 text-sm font-medium">Active Classes</p>
+                      <p className="text-3xl font-bold text-gray-900">{new Set(students.map(s => s.classNumber)).size}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-600 text-sm">
                     <BookOpen className="w-4 h-4 mr-1" />
                     <span>Classes running</span>
-          </div>
-        </div>
+                  </div>
+                </div>
               </motion.div>
               
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-sky-200"
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-500/20 backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-500/20 backdrop-blur-sm"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-white/40 rounded-xl backdrop-blur-sm">
-                      <TrendingUp className="w-6 h-6 text-sky-600" />
+                    <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg">
+                      <TrendingUp className="w-6 h-6 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-sky-700 text-sm font-medium">New This Month</p>
-                      <p className="text-3xl font-bold text-sky-900">12</p>
+                      <p className="text-gray-700 text-sm font-medium">New This Month</p>
+                      <p className="text-3xl font-bold text-gray-900">12</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-sky-700 text-sm">
+                  <div className="flex items-center text-gray-600 text-sm">
                     <span>+25% growth</span>
-            </div>
-            </div>
+                  </div>
+                </div>
               </motion.div>
           </div>
         </div>
@@ -395,44 +394,44 @@ const UserManagement = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-sky-200"
+          className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20"
         >
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-sky-500 w-5 h-5" />
-              <Input
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                <Input
                   placeholder="Search students by name, email, or class..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 h-12 bg-white/70 border-sky-200 text-sky-900 placeholder-sky-600 focus:border-sky-400 focus:ring-sky-400/20 rounded-xl backdrop-blur-sm"
-              />
-            </div>
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-12 bg-white/70 border-gray-200 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:ring-blue-400/20 rounded-xl backdrop-blur-sm"
+                />
+              </div>
               <div className="flex items-center gap-3">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-6 backdrop-blur-sm"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl px-6 shadow-lg"
                 >
-              <Filter className="w-4 h-4 mr-2" />
+                  <Filter className="w-4 h-4 mr-2" />
                   Advanced Filter
                 </Button>
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-6 backdrop-blur-sm"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl px-6 shadow-lg"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Export
-            </Button>
-          </div>
+                </Button>
+              </div>
             </div>
             
             <div className="flex items-center gap-3">
             <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
               <DialogTrigger asChild>
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-6 backdrop-blur-sm"
-                  >
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl px-6 shadow-lg"
+                >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload CSV
                 </Button>
@@ -529,12 +528,12 @@ const UserManagement = () => {
           
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
-                  >
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               <UserPlus className="w-4 h-4 mr-2" />
-                    Add New Student
+              Add New Student
             </Button>
           </DialogTrigger>
                 <DialogContent className="max-w-lg bg-white/80 border-sky-200 backdrop-blur-xl">

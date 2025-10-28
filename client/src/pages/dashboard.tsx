@@ -204,12 +204,10 @@ export default function Dashboard() {
     setSelectedVideo(null);
   };
 
-  // Fetch dashboard data
-  const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ["/api/users", MOCK_USER_ID, "dashboard"],
-  });
+  // Dashboard data is now handled by other queries (userData, contentData)
+  // Removed problematic mock query that was causing 404 errors
 
-  if (isLoading || isLoadingUser || isLoadingContent) {
+  if (isLoadingUser || isLoadingContent) {
     return (
       <>
         <Navigation />
@@ -227,9 +225,10 @@ export default function Dashboard() {
     );
   }
 
-  const stats = (dashboardData as any)?.stats || { streak: 0, questionsAnswered: 0, accuracyRate: 0, rank: 0 };
-  const recommendedVideos = (dashboardData as any)?.recommendedVideos || [];
-  const availableTests = (dashboardData as any)?.availableTests || [];
+  // Use mock data for stats since we don't have a real dashboard API yet
+  const stats = { streak: 0, questionsAnswered: 0, accuracyRate: 0, rank: 0 };
+  const recommendedVideos = [];
+  const availableTests = [];
 
   const subjectProgress = [
     { id: "1", name: "Physics", progress: 75, trend: "up" as const, currentTopic: "Mechanics - Rotational Motion", color: "bg-blue-100 text-blue-600" },
