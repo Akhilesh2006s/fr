@@ -8,217 +8,24 @@ import { Badge } from '@/components/ui/badge';
 import ShaderBackground from '@/components/ShaderBackground';
 import { 
   Play, 
-  BookOpen, 
   Brain, 
   Trophy, 
   Users, 
   Star, 
   ArrowRight, 
-  CheckCircle,
-  Zap,
   Target,
   BarChart3,
-  Clock,
-  Award,
-  Globe,
   Shield,
   Sparkles,
   Rocket,
   TrendingUp,
-  Lightbulb,
   Heart,
   Eye,
   User,
-  Loader,
-  GraduationCap,
-  BookMarked,
-  Calculator,
-  Microscope,
-  Atom,
-  Code,
-  Database,
-  Network,
-  Smartphone,
-  Laptop,
-  Headphones,
   Video,
-  FileText,
-  PenTool,
-  Compass,
-  MapPin,
-  Calendar,
-  DollarSign,
   Crown,
-  Percent,
-  Plus,
-  Check,
-  AlertTriangle,
   Info,
-  HelpCircle,
-  Settings,
-  Search,
-  Filter,
-  Download,
-  Upload,
-  Share,
-  Copy,
-  Edit,
-  Save,
-  Send,
-  Mail,
-  Phone,
-  MessageCircle,
-  ThumbsUp,
-  Bookmark,
-  Flag,
-  Bell,
-  Lock,
-  Unlock,
-  Key,
-  Fingerprint,
-  CreditCard,
-  ShoppingCart,
-  Package,
-  Truck,
-  Home,
-  Building,
-  School,
-  Hospital,
-  Bank,
-  Store,
-  Office,
-  Car,
-  Bus,
-  Train,
-  Plane,
-  Ship,
-  Bike,
-  Motorcycle,
-  Taxi,
-  Ambulance,
-  Fire,
-  Police,
-  Gem,
-  Diamond,
-  Sun,
-  Moon,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  Wind,
-  Thermometer,
-  Droplets,
-  Flame,
-  Snowflake,
-  TreePine,
-  Leaf,
-  Flower,
-  Seedling,
-  Sprout,
-  Tree,
-  Mountain,
-  Waves,
-  Fish,
-  Bird,
-  Cat,
-  Dog,
-  Rabbit,
-  Frog,
-  Bug,
-  Spider,
-  Butterfly,
-  Bee,
-  Ant,
-  Ladybug,
-  Snail,
-  Crab,
-  Lobster,
-  Shrimp,
-  Octopus,
-  Whale,
-  Dolphin,
-  Shark,
-  Turtle,
-  Penguin,
-  Owl,
-  Eagle,
-  Hawk,
-  Parrot,
-  Peacock,
-  Flamingo,
-  Toucan,
-  Hummingbird,
-  Robin,
-  Cardinal,
-  Bluebird,
-  Canary,
-  Finch,
-  Sparrow,
-  Crow,
-  Raven,
-  Magpie,
-  Jay,
-  Woodpecker,
-  Kingfisher,
-  Heron,
-  Stork,
-  Crane,
-  Swan,
-  Duck,
-  Goose,
-  Chicken,
-  Rooster,
-  Hen,
-  Turkey,
-  Pheasant,
-  Quail,
-  Partridge,
-  Grouse,
-  Ptarmigan,
-  Sandpiper,
-  Plover,
-  Snipe,
-  Woodcock,
-  Curlew,
-  Godwit,
-  Redshank,
-  Greenshank,
-  Yellowlegs,
-  Willet,
-  Dowitcher,
-  Phalarope,
-  Avocet,
-  Stilt,
-  Oystercatcher,
-  Lapwing,
-  Dotterel,
-  Turnstone,
-  Sanderling,
-  Dunlin,
-  Knot,
-  Ruff,
-  Reeve,
-  Stint,
-  Tringa,
-  Actitis,
-  Xenus,
-  Limosa,
-  Numenius,
-  Bartramia,
-  Limnodromus,
-  Gallinago,
-  Scolopax,
-  Lymnocryptes,
-  Coenocorypha,
-  Chubbia,
-  Rostratula,
-  Jacana,
-  Hydrophasianus,
-  Metopidius,
-  Irediparra,
-  Microparra,
-  Actophilornis
+  Home
 } from 'lucide-react';
 import { Link } from 'wouter';
 
@@ -347,7 +154,7 @@ const ProfessionalHeroContent = () => {
         {/* Buttons */}
         <div className="flex-responsive-col items-center justify-center gap-responsive">
           <Link href="/auth/register">
-            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium text-responsive-base transition-all duration-200 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-responsive hover:shadow-xl">
+            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-gradient-to-r from-royal-blue-500 via-blue-500 via-sky-blue-500 to-light-blue-500 text-white font-medium text-responsive-base transition-all duration-200 hover:from-royal-blue-600 hover:via-blue-600 hover:via-sky-blue-600 hover:to-light-blue-600 cursor-pointer shadow-responsive hover:shadow-xl">
               Get Started
             </button>
           </Link>
@@ -504,24 +311,24 @@ const Homepage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-royal-blue-50 via-blue-100 via-sky-blue-100 to-light-blue-100">
       <ProfessionalHeader />
       <BottomRightNav />
       
       {/* Scroll Progress Indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-teal-400 z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-royal-blue-500 via-blue-500 via-sky-blue-500 to-light-blue-500 z-50 origin-left"
         style={{ scaleX: scrollYProgress }}
       />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-100 via-cyan-100 to-teal-100">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-royal-blue-200 via-blue-200 via-sky-blue-200 to-light-blue-200">
         <ProfessionalHeroContent />
         <ProfessionalPulsingCircle />
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-responsive bg-gradient-to-br from-blue-50 to-cyan-50">
+      <section id="features" className="py-responsive bg-gradient-to-br from-royal-blue-50 via-blue-50 via-sky-blue-50 to-light-blue-50">
         <div className="container-responsive">
           <motion.div 
             className="text-center mb-responsive"
@@ -560,7 +367,7 @@ const Homepage = () => {
                 <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm group-hover:bg-white/90 shadow-lg">
                   <CardHeader className="text-center relative overflow-hidden">
                     <motion.div 
-                      className="w-16 h-16 bg-gradient-to-r from-blue-400 to-teal-400 rounded-full flex items-center justify-center mx-auto mb-4 relative shadow-lg"
+                      className="w-16 h-16 bg-gradient-to-r from-royal-blue-400 via-blue-400 via-sky-blue-400 to-light-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 relative shadow-lg"
                       whileHover={{ 
                         rotate: 360,
                         scale: 1.1
@@ -590,7 +397,7 @@ const Homepage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-cyan-50 to-teal-50 backdrop-blur-sm relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-sky-blue-50 via-blue-50 via-royal-blue-50 to-light-blue-50 backdrop-blur-sm relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -775,7 +582,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600/20 to-teal-600/20 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-royal-blue-600/20 via-blue-600/20 via-sky-blue-600/20 to-light-blue-600/20 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
