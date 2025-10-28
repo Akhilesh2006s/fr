@@ -85,6 +85,7 @@ const TeacherDashboard = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [teacherEmail, setTeacherEmail] = useState<string>('');
   const [, setLocation] = useLocation();
 
   // Modal states
@@ -208,6 +209,7 @@ const TeacherDashboard = () => {
         setStudents(data.students || []);
         setVideos(data.videos || []);
         setAssessments(data.assessments || []);
+        setTeacherEmail(data.teacherEmail || '');
       }
     } catch (error) {
       console.error('Failed to fetch teacher data:', error);
@@ -305,7 +307,7 @@ const TeacherDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Welcome back, Teacher!
+                  Welcome, {teacherEmail || 'Teacher'}!
                 </h1>
                 <p className="text-gray-600 mt-2">Manage your classes and track student progress</p>
               </div>
