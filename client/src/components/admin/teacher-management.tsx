@@ -33,9 +33,24 @@ interface Teacher {
   department?: string;
   qualifications?: string;
   subjects: Subject[];
+  assignedClassIds?: string[];
   isActive: boolean;
   createdAt: string;
   lastLogin?: string;
+}
+
+interface Class {
+  id: string;
+  name: string;
+  description?: string;
+  subject: string;
+  grade: string;
+  teacher: string;
+  schedule: string;
+  room: string;
+  studentCount: number;
+  students: any[];
+  createdAt: string;
 }
 
 interface Subject {
@@ -48,13 +63,17 @@ interface Subject {
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const [isAssignClassDialogOpen, setIsAssignClassDialogOpen] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [assigningTeacher, setAssigningTeacher] = useState<Teacher | null>(null);
+  const [assigningClassTeacher, setAssigningClassTeacher] = useState<Teacher | null>(null);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [newTeacher, setNewTeacher] = useState({
     fullName: '',
     email: '',
@@ -67,6 +86,7 @@ const TeacherManagement = () => {
   useEffect(() => {
     fetchTeachers();
     fetchSubjects();
+    fetchClasses();
   }, []);
 
   const fetchTeachers = async () => {
@@ -208,6 +228,52 @@ const TeacherManagement = () => {
     }
   };
 
+  const fetchClasses = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/admin/classes', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Classes API Response:', data);
+      
+      // Handle different response formats
+      let classesArray = [];
+      if (Array.isArray(data)) {
+        classesArray = data;
+      } else if (data && Array.isArray(data.data)) {
+        classesArray = data.data;
+      } else if (data && Array.isArray(data.classes)) {
+        classesArray = data.classes;
+      } else {
+        console.warn('Unexpected classes API response format:', data);
+        classesArray = [];
+      }
+      
+      // Map backend _id to frontend id
+      const mappedClasses = classesArray.map((classItem: any) => ({
+        ...classItem,
+        id: classItem._id || classItem.id
+      }));
+      
+      setClasses(mappedClasses);
+    } catch (error) {
+      console.error('Failed to fetch classes:', error);
+      setClasses([
+        { id: '1', name: 'Class 10A', subject: 'General', grade: '10', teacher: 'TBD', schedule: 'Mon-Fri 9:00 AM', room: 'Room 101', studentCount: 0, students: [], createdAt: new Date().toISOString() },
+        { id: '2', name: 'Class 5B', subject: 'General', grade: '5', teacher: 'TBD', schedule: 'Mon-Fri 10:00 AM', room: 'Room 102', studentCount: 0, students: [], createdAt: new Date().toISOString() }
+      ]);
+    }
+  };
+
   const handleAddTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -298,6 +364,49 @@ const TeacherManagement = () => {
         console.error('Failed to delete teacher:', error);
         alert('Failed to delete teacher. Please try again.');
       }
+    }
+  };
+
+  const handleAssignClasses = async (teacherId: string, classIds: string[]) => {
+    if (!teacherId) {
+      alert('Invalid teacher ID');
+      return;
+    }
+
+    console.log('Assigning classes:', { teacherId, classIds });
+
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/admin/teachers/${teacherId}/assign-classes`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ classIds })
+      });
+
+      const responseData = await response.json();
+      console.log('Class assignment response:', responseData);
+
+      if (response.ok) {
+        console.log('Classes assigned successfully, refreshing teacher data...');
+        fetchTeachers();
+        setIsAssignClassDialogOpen(false);
+        setAssigningClassTeacher(null);
+        setSelectedClasses([]);
+        alert('Classes assigned successfully!');
+      } else {
+        alert(`Failed to assign classes: ${responseData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to assign classes:', error);
+      alert('Failed to assign classes. Please try again.');
     }
   };
 
@@ -425,6 +534,39 @@ const TeacherManagement = () => {
     console.log('Existing subject IDs:', existingSubjectIds);
     setSelectedSubjects(existingSubjectIds);
     setIsAssignDialogOpen(true);
+  };
+
+  const openAssignClassDialog = (teacher: Teacher) => {
+    console.log('Opening assign class dialog for teacher:', teacher);
+    setAssigningClassTeacher(teacher);
+    setSelectedClasses(teacher.assignedClassIds || []);
+    setIsAssignClassDialogOpen(true);
+  };
+
+  const handleAssignClassDialogSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningClassTeacher) {
+      alert('Invalid teacher selected');
+      return;
+    }
+
+    console.log('Dialog submit - assigningClassTeacher:', assigningClassTeacher);
+    console.log('Selected classes:', selectedClasses);
+
+    try {
+      const teacherId = assigningClassTeacher.id || (assigningClassTeacher as any)._id;
+      console.log('Teacher ID for assignment:', teacherId);
+
+      if (!teacherId) {
+        alert('Invalid teacher ID');
+        return;
+      }
+
+      await handleAssignClasses(teacherId, selectedClasses);
+    } catch (error) {
+      console.error('Failed to assign classes:', error);
+      alert('Failed to assign classes. Please try again.');
+    }
   };
 
   const handleAssignDialogSubmit = async (e: React.FormEvent) => {
@@ -777,6 +919,39 @@ const TeacherManagement = () => {
                     </div>
                   </div>
 
+                  <div className="mb-6">
+                    <h4 className="font-bold text-gray-900 text-sm mb-3">Assigned Classes:</h4>
+                    <div className="space-y-2">
+                      {teacher.assignedClassIds && teacher.assignedClassIds.length > 0 ? (
+                        teacher.assignedClassIds.map((classId) => {
+                          const classItem = classes.find(c => c.id === classId);
+                          return classItem ? (
+                            <div key={classId} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="font-medium text-gray-900">{classItem.name}</span>
+                                  <span className="text-gray-600 ml-2">- {classItem.subject}</span>
+                                </div>
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                📅 {classItem.schedule}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                🏫 {classItem.room} • 👥 {classItem.studentCount} students
+                              </div>
+                            </div>
+                          ) : (
+                            <div key={classId} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                              <span className="text-gray-500">Class ID: {classId}</span>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded-lg px-3 py-1">No classes assigned</span>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div className="flex items-center space-x-2">
                       <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl">
@@ -792,6 +967,15 @@ const TeacherManagement = () => {
                         }}
                       >
                         <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl"
+                        onClick={() => openAssignClassDialog(teacher)}
+                        title="Assign Class"
+                      >
+                        <Users className="w-4 h-4" />
                       </Button>
                       <Button 
                         size="sm" 
@@ -874,6 +1058,67 @@ const TeacherManagement = () => {
                 </Button>
                 <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl">
                   Assign Subjects
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Assign Class Dialog */}
+        <Dialog open={isAssignClassDialogOpen} onOpenChange={setIsAssignClassDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold text-gray-800">
+                Assign Classes to {assigningClassTeacher?.fullName}
+              </DialogTitle>
+              <DialogDescription>
+                Select classes to assign to this teacher from the existing classes.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAssignClassDialogSubmit} className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-gray-700 font-medium">Assign Classes</Label>
+                  <div className="mt-2 space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                    {classes.map((classItem) => (
+                      <label key={classItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedClasses.includes(classItem.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedClasses([...selectedClasses, classItem.id]);
+                            } else {
+                              setSelectedClasses(selectedClasses.filter(id => id !== classItem.id));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{classItem.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {classItem.subject} • {classItem.schedule} • {classItem.room}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {classItem.studentCount} students
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                    {classes.length === 0 && (
+                      <div className="text-center text-gray-500 py-4">
+                        No classes available. Create some classes first.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <Button type="button" variant="outline" onClick={() => setIsAssignClassDialogOpen(false)} className="rounded-xl">
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl">
+                  Assign Classes
                 </Button>
               </div>
             </form>
