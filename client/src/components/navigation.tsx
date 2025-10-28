@@ -78,7 +78,7 @@ export default function Navigation() {
                 <div className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm overflow-hidden">
                     <img 
-                      src="/logo.png" 
+                      src="/logo.jpg" 
                       alt="Asli Stud Logo" 
                       className="w-full h-full object-contain"
                     />
@@ -141,7 +141,7 @@ export default function Navigation() {
                         <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-sky-200/50 cursor-pointer hover:opacity-80 transition-opacity">
                           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-sm overflow-hidden">
                             <img 
-                              src="/logo.png" 
+                              src="/logo.jpg" 
                               alt="Asli Stud Logo" 
                               className="w-full h-full object-contain"
                             />

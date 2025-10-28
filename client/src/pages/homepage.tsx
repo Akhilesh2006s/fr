@@ -230,7 +230,7 @@ const ProfessionalHeader = () => {
       <div className="flex items-center">
         <div className="flex items-center space-x-4">
           <img 
-            src="/logo.png" 
+            src="/logo.jpg" 
             alt="Asli Stud Logo" 
             className="w-16 h-16 object-contain"
           />
