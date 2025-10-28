@@ -4,6 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLocation } from 'wouter';
 import { 
   GraduationCap, 
@@ -82,6 +87,31 @@ const TeacherDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [, setLocation] = useLocation();
 
+  // Modal states
+  const [isAddVideoModalOpen, setIsAddVideoModalOpen] = useState(false);
+  const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] = useState(false);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
+
+  // Form states
+  const [videoForm, setVideoForm] = useState({
+    title: '',
+    description: '',
+    videoUrl: '',
+    subject: '',
+    duration: '',
+    difficulty: 'medium'
+  });
+
+  const [assessmentForm, setAssessmentForm] = useState({
+    title: '',
+    description: '',
+    subject: '',
+    questions: '',
+    timeLimit: '',
+    difficulty: 'medium'
+  });
+
   useEffect(() => {
     fetchTeacherData();
   }, []);
@@ -90,6 +120,76 @@ const TeacherDashboard = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     setLocation('/auth/login');
+  };
+
+  const handleCreateVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreatingVideo(true);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/videos', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(videoForm)
+      });
+
+      if (response.ok) {
+        const newVideo = await response.json();
+        setVideos(prev => [...prev, newVideo]);
+        setIsAddVideoModalOpen(false);
+        setVideoForm({ title: '', description: '', videoUrl: '', subject: '', duration: '', difficulty: 'medium' });
+        alert('Video created successfully!');
+        // Refresh teacher data to update stats
+        await fetchTeacherData();
+      } else {
+        const error = await response.json();
+        alert(`Failed to create video: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Failed to create video:', error);
+      alert('Failed to create video. Please try again.');
+    } finally {
+      setIsCreatingVideo(false);
+    }
+  };
+
+  const handleCreateAssessment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreatingAssessment(true);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/assessments', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(assessmentForm)
+      });
+
+      if (response.ok) {
+        const newAssessment = await response.json();
+        setAssessments(prev => [...prev, newAssessment]);
+        setIsAddAssessmentModalOpen(false);
+        setAssessmentForm({ title: '', description: '', subject: '', questions: '', timeLimit: '', difficulty: 'medium' });
+        alert('Assessment created successfully!');
+        // Refresh teacher data to update stats
+        await fetchTeacherData();
+      } else {
+        const error = await response.json();
+        alert(`Failed to create assessment: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Failed to create assessment:', error);
+      alert('Failed to create assessment. Please try again.');
+    } finally {
+      setIsCreatingAssessment(false);
+    }
   };
 
   const fetchTeacherData = async () => {
@@ -448,11 +548,17 @@ const TeacherDashboard = () => {
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold text-gray-900">Content Management</h2>
                 <div className="flex space-x-3">
-                  <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                  <Button 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                    onClick={() => setIsAddVideoModalOpen(true)}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Video
                   </Button>
-                  <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white">
+                  <Button 
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                    onClick={() => setIsAddAssessmentModalOpen(true)}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Assessment
                   </Button>
@@ -690,6 +796,187 @@ const TeacherDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Add Video Modal */}
+      <Dialog open={isAddVideoModalOpen} onOpenChange={setIsAddVideoModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-800">Add New Video</DialogTitle>
+            <DialogDescription>
+              Create a new educational video for your students.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateVideo} className="space-y-4">
+            <div>
+              <Label htmlFor="video-title" className="text-gray-700 font-medium">Title *</Label>
+              <Input
+                id="video-title"
+                value={videoForm.title}
+                onChange={(e) => setVideoForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Enter video title"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="video-description" className="text-gray-700 font-medium">Description</Label>
+              <Textarea
+                id="video-description"
+                value={videoForm.description}
+                onChange={(e) => setVideoForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter video description"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="video-url" className="text-gray-700 font-medium">Video URL *</Label>
+              <Input
+                id="video-url"
+                type="url"
+                value={videoForm.videoUrl}
+                onChange={(e) => setVideoForm(prev => ({ ...prev, videoUrl: e.target.value }))}
+                placeholder="https://youtube.com/watch?v=..."
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="video-subject" className="text-gray-700 font-medium">Subject *</Label>
+              <Input
+                id="video-subject"
+                value={videoForm.subject}
+                onChange={(e) => setVideoForm(prev => ({ ...prev, subject: e.target.value }))}
+                placeholder="e.g., Mathematics, Science"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="video-duration" className="text-gray-700 font-medium">Duration (minutes) *</Label>
+              <Input
+                id="video-duration"
+                type="number"
+                value={videoForm.duration}
+                onChange={(e) => setVideoForm(prev => ({ ...prev, duration: e.target.value }))}
+                placeholder="60"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="video-difficulty" className="text-gray-700 font-medium">Difficulty</Label>
+              <Select value={videoForm.difficulty} onValueChange={(value) => setVideoForm(prev => ({ ...prev, difficulty: value }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select difficulty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">Easy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="hard">Hard</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsAddVideoModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isCreatingVideo} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                {isCreatingVideo ? 'Creating...' : 'Create Video'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Assessment Modal */}
+      <Dialog open={isAddAssessmentModalOpen} onOpenChange={setIsAddAssessmentModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-800">Add New Assessment</DialogTitle>
+            <DialogDescription>
+              Create a new assessment for your students.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateAssessment} className="space-y-4">
+            <div>
+              <Label htmlFor="assessment-title" className="text-gray-700 font-medium">Title *</Label>
+              <Input
+                id="assessment-title"
+                value={assessmentForm.title}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Enter assessment title"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assessment-description" className="text-gray-700 font-medium">Description</Label>
+              <Textarea
+                id="assessment-description"
+                value={assessmentForm.description}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter assessment description"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assessment-subject" className="text-gray-700 font-medium">Subject *</Label>
+              <Input
+                id="assessment-subject"
+                value={assessmentForm.subject}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, subject: e.target.value }))}
+                placeholder="e.g., Mathematics, Science"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assessment-questions" className="text-gray-700 font-medium">Number of Questions *</Label>
+              <Input
+                id="assessment-questions"
+                type="number"
+                value={assessmentForm.questions}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, questions: e.target.value }))}
+                placeholder="10"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assessment-time" className="text-gray-700 font-medium">Time Limit (minutes)</Label>
+              <Input
+                id="assessment-time"
+                type="number"
+                value={assessmentForm.timeLimit}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, timeLimit: e.target.value }))}
+                placeholder="30"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="assessment-difficulty" className="text-gray-700 font-medium">Difficulty</Label>
+              <Select value={assessmentForm.difficulty} onValueChange={(value) => setAssessmentForm(prev => ({ ...prev, difficulty: value }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select difficulty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">Easy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="hard">Hard</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsAddAssessmentModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isCreatingAssessment} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+                {isCreatingAssessment ? 'Creating...' : 'Create Assessment'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
