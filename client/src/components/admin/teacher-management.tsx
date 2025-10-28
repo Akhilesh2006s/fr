@@ -413,8 +413,8 @@ const TeacherManagement = () => {
           ));
         }
         
-        // Force refresh teachers data
-        await fetchTeachers();
+        // Don't refresh teachers data immediately - keep optimistic update
+        // await fetchTeachers();
         
         setIsAssignClassDialogOpen(false);
         setAssigningClassTeacher(null);
