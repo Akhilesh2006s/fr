@@ -154,7 +154,7 @@ const ProfessionalHeroContent = () => {
         {/* Buttons */}
         <div className="flex-responsive-col items-center justify-center gap-responsive">
           <Link href="/auth/register">
-            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-gradient-to-r from-electric-purple-600 via-neon-cyan-600 via-royal-blue-600 to-light-blue-600 text-white font-medium text-responsive-base transition-all duration-200 hover:from-electric-purple-700 hover:via-neon-cyan-700 hover:via-royal-blue-700 hover:to-light-blue-700 cursor-pointer shadow-responsive hover:shadow-xl">
+            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-gradient-to-r from-midnight-blue-600 via-rose-pink-600 via-golden-yellow-600 to-forest-green-600 text-white font-medium text-responsive-base transition-all duration-200 hover:from-midnight-blue-700 hover:via-rose-pink-700 hover:via-golden-yellow-700 hover:to-forest-green-700 cursor-pointer shadow-responsive hover:shadow-xl">
               Get Started
             </button>
           </Link>
@@ -311,24 +311,24 @@ const Homepage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-royal-blue-500 via-electric-purple-500 via-neon-cyan-500 to-light-blue-600">
+    <div className="min-h-screen bg-gradient-to-br from-midnight-blue-600 via-rose-pink-500 via-golden-yellow-500 to-forest-green-600">
       <ProfessionalHeader />
       <BottomRightNav />
       
       {/* Scroll Progress Indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-royal-blue-600 via-electric-purple-600 via-neon-cyan-600 to-light-blue-600 z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-midnight-blue-700 via-rose-pink-600 via-golden-yellow-600 to-forest-green-700 z-50 origin-left"
         style={{ scaleX: scrollYProgress }}
       />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-royal-blue-600 via-electric-purple-600 via-neon-cyan-600 to-light-blue-700">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-midnight-blue-700 via-rose-pink-600 via-golden-yellow-600 to-forest-green-700">
         <ProfessionalHeroContent />
         <ProfessionalPulsingCircle />
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-responsive bg-gradient-to-br from-electric-purple-500 via-neon-cyan-500 via-royal-blue-500 to-light-blue-600">
+      <section id="features" className="py-responsive bg-gradient-to-br from-rose-pink-500 via-golden-yellow-500 via-midnight-blue-500 to-forest-green-600">
         <div className="container-responsive">
           <motion.div 
             className="text-center mb-responsive"
@@ -367,7 +367,7 @@ const Homepage = () => {
                 <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm group-hover:bg-white/90 shadow-lg">
                   <CardHeader className="text-center relative overflow-hidden">
                     <motion.div 
-                      className="w-16 h-16 bg-gradient-to-r from-electric-purple-500 via-neon-cyan-500 via-royal-blue-500 to-light-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 relative shadow-lg"
+                      className="w-16 h-16 bg-gradient-to-r from-golden-yellow-500 via-forest-green-500 via-midnight-blue-500 to-rose-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 relative shadow-lg"
                       whileHover={{ 
                         rotate: 360,
                         scale: 1.1
@@ -397,7 +397,7 @@ const Homepage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-neon-cyan-500 via-electric-purple-500 via-royal-blue-500 to-light-blue-600 backdrop-blur-sm relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-golden-yellow-500 via-forest-green-500 via-midnight-blue-500 to-rose-pink-600 backdrop-blur-sm relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -582,7 +582,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-electric-purple-700/50 via-neon-cyan-700/50 via-royal-blue-700/50 to-light-blue-700/50 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-forest-green-700/50 via-midnight-blue-700/50 via-rose-pink-700/50 to-golden-yellow-700/50 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
