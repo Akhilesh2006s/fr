@@ -478,8 +478,8 @@ const Homepage = () => {
   const stats = [
     { number: "50K+", label: "Active Students", icon: Users, color: "from-blue-500 to-cyan-500" },
     { number: "95%", label: "Success Rate", icon: Trophy, color: "from-green-500 to-emerald-500" },
-    { number: "1000+", label: "Video Lectures", icon: Play, color: "from-purple-500 to-pink-500" },
-    { number: "24/7", label: "AI Support", icon: Brain, color: "from-orange-500 to-red-500" }
+    { number: "1000+", label: "Video Lectures", icon: Play, color: "from-blue-500 to-cyan-500" },
+    { number: "24/7", label: "AI Support", icon: Brain, color: "from-teal-500 to-emerald-500" }
   ];
 
   const testimonials = [
@@ -676,7 +676,7 @@ const Homepage = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                        <Star key={i} className="w-4 h-4 text-blue-400 fill-current" />
                       ))}
                     </div>
                     <p className="text-white/80 mb-4 italic">
@@ -726,7 +726,7 @@ const Homepage = () => {
             >
               <Card className="h-full bg-white/10 backdrop-blur-sm border-0 hover:bg-white/20 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Brain className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">AI-Powered</h3>
@@ -760,7 +760,7 @@ const Homepage = () => {
             >
               <Card className="h-full bg-white/10 backdrop-blur-sm border-0 hover:bg-white/20 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Trophy className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">Results</h3>
@@ -775,7 +775,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-blue-600/20 to-teal-600/20 text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -852,7 +852,7 @@ const Homepage = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="border-red-300 text-red-200 hover:bg-red-500/20 hover:text-red-100 backdrop-blur-sm"
+                    className="border-blue-300 text-blue-200 hover:bg-blue-500/20 hover:text-blue-100 backdrop-blur-sm"
                   >
                     <Crown className="w-4 h-4 mr-2" />
                     Super Admin Access
