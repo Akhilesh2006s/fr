@@ -105,6 +105,7 @@ const TeacherManagement = () => {
       
       const data = await response.json();
       console.log('API Response:', data); // Debug log
+      console.log('Raw teachers data:', data);
       
       // Handle different response formats
       let teachersArray = [];
@@ -395,11 +396,17 @@ const TeacherManagement = () => {
 
       const responseData = await response.json();
       console.log('Class assignment response:', responseData);
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
 
       if (response.ok) {
         console.log('Classes assigned successfully, refreshing teacher data...');
         console.log('Response data:', responseData.data);
-        fetchTeachers();
+        console.log('Response data assignedClassIds:', responseData.data?.assignedClassIds);
+        
+        // Force refresh teachers data
+        await fetchTeachers();
+        
         setIsAssignClassDialogOpen(false);
         setAssigningClassTeacher(null);
         setSelectedClasses([]);
