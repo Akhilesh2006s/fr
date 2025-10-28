@@ -84,6 +84,7 @@ const TeacherDashboard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assignedClasses, setAssignedClasses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [teacherEmail, setTeacherEmail] = useState<string>('');
   const [, setLocation] = useLocation();
@@ -210,6 +211,7 @@ const TeacherDashboard = () => {
         setVideos(data.videos || []);
         setAssessments(data.assessments || []);
         setTeacherEmail(data.teacherEmail || '');
+        setAssignedClasses(data.assignedClasses || []);
       }
     } catch (error) {
       console.error('Failed to fetch teacher data:', error);
@@ -641,26 +643,30 @@ const TeacherDashboard = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {stats.totalClasses > 0 ? (
-                  // Show real classes from teacher's assigned classes
-                  Array.from({ length: stats.totalClasses }, (_, i) => (
-                    <div key={i} className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
+                {assignedClasses.length > 0 ? (
+                  // Show real assigned classes
+                  assignedClasses.map((classItem, index) => (
+                    <div key={classItem.id || index} className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-gray-900">Class {i + 1}</h3>
+                        <h3 className="text-xl font-bold text-gray-900">{classItem.name}</h3>
                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                       </div>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600">Students:</span>
-                          <span className="font-medium">{Math.floor(stats.totalStudents / stats.totalClasses)}</span>
+                          <span className="font-medium">{classItem.studentCount}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600">Subject:</span>
-                          <span className="font-medium">Assigned Subject</span>
+                          <span className="font-medium">{classItem.subject}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600">Schedule:</span>
-                          <span className="font-medium">TBD</span>
+                          <span className="font-medium">{classItem.schedule}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Room:</span>
+                          <span className="font-medium">{classItem.room}</span>
                         </div>
                       </div>
                       <div className="mt-4 flex space-x-2">
