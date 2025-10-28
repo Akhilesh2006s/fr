@@ -137,11 +137,13 @@ const TeacherManagement = () => {
                   ...subject,
                   id: subject._id || subject.id || Math.random().toString(36).substr(2, 9) // Fallback ID
                 }))
-            : []
+            : [],
+          assignedClassIds: teacher.assignedClassIds || []
         };
         
         // Log teacher data for debugging
         console.log(`Teacher ${mappedTeacher.fullName} subjects:`, mappedTeacher.subjects);
+        console.log(`Teacher ${mappedTeacher.fullName} assignedClassIds:`, mappedTeacher.assignedClassIds);
         
         return mappedTeacher;
       }).filter(teacher => teacher !== null); // Remove any null teachers
@@ -396,6 +398,7 @@ const TeacherManagement = () => {
 
       if (response.ok) {
         console.log('Classes assigned successfully, refreshing teacher data...');
+        console.log('Response data:', responseData.data);
         fetchTeachers();
         setIsAssignClassDialogOpen(false);
         setAssigningClassTeacher(null);
