@@ -193,21 +193,21 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-responsive">
         {/* Chat Messages */}
-        <ScrollArea className="h-64 w-full pr-4" ref={scrollAreaRef}>
+        <ScrollArea className="h-64 sm:h-80 lg:h-96 w-full pr-responsive" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>Start a conversation with your AI tutor!</p>
-                <p className="text-sm mt-2">Ask any questions about your studies.</p>
+              <div className="text-center text-gray-500 py-responsive">
+                <MessageCircle className="w-12 h-12 mx-auto mb-responsive text-gray-300" />
+                <p className="text-responsive-sm">Start a conversation with your AI tutor!</p>
+                <p className="text-responsive-xs mt-responsive">Ask any questions about your studies.</p>
               </div>
             ) : (
               messages.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex items-start space-x-3 ${
+                  className={`flex items-start space-x-responsive ${
                     msg.role === "user" ? "justify-end" : ""
                   }`}
                 >
@@ -218,13 +218,13 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
                   )}
                   
                   <div
-                    className={`max-w-xs ${
+                    className={`max-w-xs sm:max-w-sm lg:max-w-md ${
                       msg.role === "user" ? "chat-message-user" : "chat-message-ai"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    <p className="text-responsive-xs whitespace-pre-wrap">{msg.content}</p>
                     <span
-                      className={`text-xs mt-1 block ${
+                      className={`text-responsive-xs mt-responsive block ${
                         msg.role === "user" ? "text-primary-200" : "text-gray-500"
                       }`}
                     >
@@ -237,7 +237,7 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
 
                   {msg.role === "user" && (
                     <div className="w-8 h-8 gradient-accent rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-medium text-white">AK</span>
+                      <span className="text-responsive-xs font-medium text-white">AK</span>
                     </div>
                   )}
                 </div>
@@ -259,31 +259,32 @@ export default function AIChat({ userId, context, className }: AIChatProps) {
 
         {/* Context Display */}
         {context && (context.currentSubject || context.currentTopic) && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-responsive">
             {context.currentSubject && (
-              <Badge variant="outline">Subject: {context.currentSubject}</Badge>
+              <Badge variant="outline" className="text-responsive-xs">Subject: {context.currentSubject}</Badge>
             )}
             {context.currentTopic && (
-              <Badge variant="outline">Topic: {context.currentTopic}</Badge>
+              <Badge variant="outline" className="text-responsive-xs">Topic: {context.currentTopic}</Badge>
             )}
           </div>
         )}
 
         {/* Input Area */}
-        <div className="space-y-3">
-          <div className="flex space-x-2">
+        <div className="space-responsive">
+          <div className="flex-responsive-row gap-responsive">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask anything about your studies..."
-              className="flex-1"
+              className="flex-1 text-responsive-sm"
               disabled={sendMessageMutation.isPending}
             />
             <Button
               onClick={handleSendMessage}
               disabled={!message.trim() || sendMessageMutation.isPending}
               size="icon"
+              className="w-10 h-10 sm:w-12 sm:h-12"
             >
               {sendMessageMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

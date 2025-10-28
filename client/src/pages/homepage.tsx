@@ -332,27 +332,27 @@ const ProfessionalHeroContent = () => {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-6xl md:text-8xl md:leading-16 tracking-tight font-light text-blue-800 mb-8">
+        <h1 className="text-responsive-3xl tracking-tight font-light text-blue-800 mb-responsive">
           <span className="font-bold italic text-blue-600">Intelligent</span> Learning
           <br />
           <span className="font-light tracking-tight text-teal-600">Platform</span>
         </h1>
 
         {/* Description */}
-        <p className="text-lg font-light text-blue-700 mb-8 leading-relaxed max-w-2xl mx-auto">
+        <p className="text-responsive-base font-light text-blue-700 mb-responsive leading-relaxed max-w-2xl mx-auto px-responsive">
           Transform your education with our advanced AI technology. Personalized learning paths, 
           interactive content, and intelligent assessments that adapt to your unique learning style.
         </p>
 
         {/* Buttons */}
-        <div className="flex items-center justify-center gap-6 flex-wrap">
+        <div className="flex-responsive-col items-center justify-center gap-responsive">
           <Link href="/auth/register">
-            <button className="px-12 py-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium text-lg transition-all duration-200 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-lg hover:shadow-xl">
+            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium text-responsive-base transition-all duration-200 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-responsive hover:shadow-xl">
               Get Started
             </button>
           </Link>
           <Link href="/auth/login">
-            <button className="px-12 py-4 rounded-full bg-white text-blue-600 font-medium text-lg transition-all duration-200 hover:bg-blue-50 cursor-pointer border-2 border-blue-300 hover:border-blue-400 shadow-lg">
+            <button className="w-full sm:w-auto px-responsive py-responsive rounded-responsive bg-white text-blue-600 font-medium text-responsive-base transition-all duration-200 hover:bg-blue-50 cursor-pointer border-responsive border-blue-300 hover:border-blue-400 shadow-responsive">
               Sign In
             </button>
           </Link>
@@ -521,26 +521,26 @@ const Homepage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-responsive bg-gradient-to-br from-blue-50 to-cyan-50">
+        <div className="container-responsive">
           <motion.div 
-            className="text-center mb-16"
+            className="text-center mb-responsive"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-blue-800 mb-6">
+            <h2 className="text-responsive-2xl font-bold text-blue-800 mb-responsive">
               Why Choose Asli Stud?
             </h2>
-            <p className="text-xl text-blue-700 max-w-3xl mx-auto">
+            <p className="text-responsive-lg text-blue-700 max-w-3xl mx-auto px-responsive">
               Experience the future of education with our AI-powered platform designed 
               to maximize your learning potential and exam success.
             </p>
           </motion.div>
 
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className="grid-responsive-4 gap-responsive"
             variants={staggerChildren}
             initial="hidden"
             whileInView="visible"

@@ -211,10 +211,10 @@ export default function Dashboard() {
     return (
       <>
         <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-8">
-            <Skeleton className="h-48 w-full rounded-2xl" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="container-responsive py-responsive">
+          <div className="space-responsive">
+            <Skeleton className="h-48 w-full rounded-responsive" />
+            <div className="grid-responsive-4 gap-responsive">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className="h-24 w-full" />
               ))}
@@ -239,24 +239,24 @@ export default function Dashboard() {
   return (
     <>
       <Navigation />
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 bg-gray-50 min-h-screen ${isMobile ? 'pb-20' : ''}`}>
+      <div className={`container-responsive pt-responsive pb-responsive bg-gray-50 min-h-screen ${isMobile ? 'pb-20' : ''}`}>
         
         {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="gradient-primary rounded-2xl p-8 text-white relative overflow-hidden">
+        <div className="mb-responsive">
+          <div className="gradient-primary rounded-responsive p-responsive text-white relative overflow-hidden">
             <div className="relative z-10">
-              <h1 className="text-3xl font-bold mb-2">
+              <h1 className="text-responsive-xl font-bold mb-responsive">
                 Welcome back, {user?.email || 'Student'}!
               </h1>
-              <p className="text-blue-100 mb-6">
+              <p className="text-blue-100 mb-responsive text-responsive-sm">
                 Ready to continue your {user?.educationStream || 'JEE'} preparation journey? Your AI tutor has personalized recommendations waiting.
               </p>
               
-              <div className="flex flex-wrap gap-4">
-                <Button className="bg-white text-primary hover:bg-blue-50">
+              <div className="flex-responsive-col gap-responsive">
+                <Button className="bg-white text-primary hover:bg-blue-50 w-full sm:w-auto">
                   Continue Learning
                 </Button>
-                <Button variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/20">
+                <Button variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/20 w-full sm:w-auto">
                   Ask AI Tutor
                 </Button>
               </div>
@@ -272,12 +272,12 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div className="grid-responsive-4 gap-responsive mb-responsive">
           <div className="stats-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Study Streak</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.streak} days</p>
+                <p className="text-gray-600 text-responsive-xs">Study Streak</p>
+                <p className="text-responsive-lg font-bold text-gray-900">{stats.streak} days</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <Flame className="w-6 h-6 text-orange-600" />
@@ -288,8 +288,8 @@ export default function Dashboard() {
           <div className="stats-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Questions Solved</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.questionsAnswered.toLocaleString()}</p>
+                <p className="text-gray-600 text-responsive-xs">Questions Solved</p>
+                <p className="text-responsive-lg font-bold text-gray-900">{stats.questionsAnswered.toLocaleString()}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -300,8 +300,8 @@ export default function Dashboard() {
           <div className="stats-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Accuracy Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.accuracyRate}%</p>
+                <p className="text-gray-600 text-responsive-xs">Accuracy Rate</p>
+                <p className="text-responsive-lg font-bold text-gray-900">{stats.accuracyRate}%</p>
               </div>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-primary" />
@@ -312,8 +312,8 @@ export default function Dashboard() {
           <div className="stats-card">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Rank</p>
-                <p className="text-2xl font-bold text-gray-900">#{stats.rank}</p>
+                <p className="text-gray-600 text-responsive-xs">Rank</p>
+                <p className="text-responsive-lg font-bold text-gray-900">#{stats.rank}</p>
               </div>
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-secondary" />
@@ -348,7 +348,7 @@ export default function Dashboard() {
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{video.title}</p>
+                        <p className="text-responsive-xs font-medium text-gray-900">{video.title}</p>
                         <p className="text-xs text-gray-500">{video.duration} min • {video.subject}</p>
                         {video.isYouTubeVideo && (
                           <span className="text-xs text-red-600">YouTube</span>
@@ -367,7 +367,7 @@ export default function Dashboard() {
                 ))}
                 {videos.length === 0 && (
                   <div className="text-center py-4">
-                    <p className="text-gray-500 text-sm">No videos available</p>
+                    <p className="text-gray-500 text-responsive-xs">No videos available</p>
                   </div>
                 )}
               </div>
@@ -400,7 +400,7 @@ export default function Dashboard() {
                         <Target className={`w-4 h-4 ${index % 2 === 0 ? 'text-red-600' : 'text-indigo-600'}`} />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{assessment.title}</p>
+                        <p className="text-responsive-xs font-medium text-gray-900">{assessment.title}</p>
                         <p className="text-xs text-gray-500">{assessment.duration} min • {assessment.totalPoints} points</p>
                         {assessment.isDriveQuiz && (
                           <span className="text-xs text-blue-600">Google Drive</span>
@@ -415,11 +415,11 @@ export default function Dashboard() {
                 {assessmentsLoading ? (
                   <div className="text-center py-4">
                     <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                    <p className="text-gray-500 text-sm">Loading assessments...</p>
+                    <p className="text-gray-500 text-responsive-xs">Loading assessments...</p>
                   </div>
                 ) : assessments.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-gray-500 text-sm">No assessments available</p>
+                    <p className="text-gray-500 text-responsive-xs">No assessments available</p>
                     <p className="text-xs text-gray-400 mt-1">Debug: {assessments.length} assessments loaded</p>
                   </div>
                 ) : null}
@@ -455,8 +455,8 @@ export default function Dashboard() {
                 {/* Progress Overview */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-                    <span className="text-sm font-medium text-primary">68%</span>
+                    <span className="text-responsive-xs font-medium text-gray-700">Overall Progress</span>
+                    <span className="text-responsive-xs font-medium text-primary">68%</span>
                   </div>
                   <Progress value={68} className="h-3" />
                 </div>
@@ -467,17 +467,17 @@ export default function Dashboard() {
                     <div key={subject.id} className="subject-progress-card">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${subject.color}`}>
-                          <span className="text-sm font-medium">
+                          <span className="text-responsive-xs font-medium">
                             {subject.name.substring(0, 2)}
                           </span>
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-900">{subject.name}</h3>
-                          <p className="text-sm text-gray-600">{subject.currentTopic}</p>
+                          <p className="text-responsive-xs text-gray-600">{subject.currentTopic}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">{subject.progress}%</p>
+                        <p className="text-responsive-xs font-medium text-gray-900">{subject.progress}%</p>
                         <div className="w-16 bg-gray-200 rounded-full h-1 mt-1">
                           <div 
                             className="bg-primary h-1 rounded-full" 
@@ -520,7 +520,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="absolute bottom-2 left-2 right-2">
-                        <p className="text-white text-sm font-medium">{video.title}</p>
+                        <p className="text-white text-responsive-xs font-medium">{video.title}</p>
                         <p className="text-white/80 text-xs">
                           {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')} • {video.subjectId}
                         </p>
@@ -535,8 +535,8 @@ export default function Dashboard() {
                       <Zap className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900">AI-Enhanced Features</h4>
-                      <p className="text-sm text-gray-600 mt-1">Auto-generated notes, visual memory maps, and voice Q&A available for all lectures</p>
+                      <h4 className="text-responsive-xs font-medium text-gray-900">AI-Enhanced Features</h4>
+                      <p className="text-responsive-xs text-gray-600 mt-1">Auto-generated notes, visual memory maps, and voice Q&A available for all lectures</p>
                     </div>
                   </div>
                 </div>
@@ -563,7 +563,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900">JEE Main Practice Test</h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-responsive-xs text-gray-600">
                           90 Questions • 3 Hours • Maths, Physics, Chemistry
                         </p>
                         <div className="flex items-center space-x-4 mt-1">
@@ -589,7 +589,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900">JEE Advanced Practice Test</h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-responsive-xs text-gray-600">
                           54 Questions • 3 Hours • Maths, Physics, Chemistry
                         </p>
                         <div className="flex items-center space-x-4 mt-1">
@@ -615,7 +615,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900">Daily Quick Quiz</h4>
-                        <p className="text-sm text-gray-600">5 Questions • Earn 50 XP • Current Streak: {stats.streak} days</p>
+                        <p className="text-responsive-xs text-gray-600">5 Questions • Earn 50 XP • Current Streak: {stats.streak} days</p>
                       </div>
                     </div>
                     <Button className="gradient-accent text-white">
@@ -656,28 +656,28 @@ export default function Dashboard() {
                     <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mb-2">
                       <TrendingUp className="w-4 h-4 text-red-600" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900">Practice Weak Topics</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Practice Weak Topics</p>
                   </button>
 
                   <button className="quick-action-button">
                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
                       <Calendar className="w-4 h-4 text-blue-600" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900">Schedule Study</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Schedule Study</p>
                   </button>
 
                   <button className="quick-action-button">
                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mb-2">
                       <Download className="w-4 h-4 text-green-600" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900">Download Notes</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Download Notes</p>
                   </button>
 
                   <button className="quick-action-button">
                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mb-2">
                       <Users className="w-4 h-4 text-purple-600" />
                     </div>
-                    <p className="text-sm font-medium text-gray-900">Study Groups</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Study Groups</p>
                   </button>
                 </div>
               </CardContent>
@@ -694,7 +694,7 @@ export default function Dashboard() {
                     <Star className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Study Streak Master</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Study Streak Master</p>
                     <p className="text-xs text-gray-600">{stats.streak} days continuous learning</p>
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export default function Dashboard() {
                     <Award className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Quiz Champion</p>
+                    <p className="text-responsive-xs font-medium text-gray-900">Quiz Champion</p>
                     <p className="text-xs text-gray-600">90% accuracy in daily quizzes</p>
                   </div>
                 </div>

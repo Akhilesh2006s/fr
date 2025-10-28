@@ -166,17 +166,17 @@ export default function AITutor() {
   return (
     <>
       <Navigation />
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 ${isMobile ? 'pb-20' : ''}`}>
+      <div className={`container-responsive pt-responsive pb-responsive ${isMobile ? 'pb-20' : ''}`}>
         
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-4">
+        <div className="mb-responsive">
+          <div className="flex-responsive-col items-center sm:items-start space-x-responsive space-y-responsive sm:space-y-0 mb-responsive">
             <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center">
               <Zap className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Tutor</h1>
-              <p className="text-gray-600">Your personal AI teaching assistant</p>
+            <div className="text-center sm:text-left">
+              <h1 className="text-responsive-xl font-bold text-gray-900">AI Tutor</h1>
+              <p className="text-responsive-sm text-gray-600">Your personal AI teaching assistant</p>
             </div>
             <Badge className="bg-green-100 text-green-800">
               Available 24/7
@@ -184,11 +184,11 @@ export default function AITutor() {
           </div>
           
           {user && (
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border border-blue-100">
-              <h2 className="font-semibold text-gray-900 mb-2">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-responsive rounded-responsive border border-blue-100">
+              <h2 className="font-semibold text-gray-900 mb-responsive text-responsive-base">
                 Welcome, {user.fullName?.split(' ')[0] || 'Student'}!
               </h2>
-              <p className="text-gray-700">
+              <p className="text-gray-700 text-responsive-sm">
                 I'm here to help you with your {user.educationStream} preparation. 
                 Ask me anything about your studies!
               </p>
@@ -196,7 +196,7 @@ export default function AITutor() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid-responsive-3 gap-responsive">
           
           {/* Main Chat Interface */}
           <div className="lg:col-span-2">
