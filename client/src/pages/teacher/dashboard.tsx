@@ -86,7 +86,7 @@ const TeacherDashboard = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [assignedClasses, setAssignedClasses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [teacherEmail, setTeacherEmail] = useState<string>('');
+  const [teacherEmail, setTeacherEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [, setLocation] = useLocation();
 
   // Modal states
@@ -121,6 +121,7 @@ const TeacherDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
     setLocation('/auth/login');
   };
 

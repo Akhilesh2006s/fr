@@ -54,6 +54,11 @@ const Login = () => {
           console.log('JWT token stored in localStorage');
         }
         
+        // Store user role and email for immediate display
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userEmail', data.user.email);
+        console.log('User role and email stored:', data.user.role, data.user.email);
+        
         // Redirect based on user role
         if (data.user.role === 'super-admin') {
           console.log('Redirecting to super admin dashboard');
