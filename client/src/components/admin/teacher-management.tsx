@@ -404,6 +404,15 @@ const TeacherManagement = () => {
         console.log('Response data:', responseData.data);
         console.log('Response data assignedClassIds:', responseData.data?.assignedClassIds);
         
+        // Update UI immediately with optimistic update
+        if (assigningClassTeacher) {
+          setTeachers(prev => prev.map(teacher => 
+            teacher.id === assigningClassTeacher.id 
+              ? { ...teacher, assignedClassIds: classIds }
+              : teacher
+          ));
+        }
+        
         // Force refresh teachers data
         await fetchTeachers();
         
