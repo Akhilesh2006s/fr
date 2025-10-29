@@ -119,44 +119,54 @@ export default function LearningPaths() {
             const subjectsWithContent = await Promise.all(
               subjectsData.subjects.map(async (subject: any) => {
                 try {
+                  const subjectId = subject._id || subject.id || subject.name;
+                  console.log(`Fetching content for subject: ${subject.name} (ID: ${subjectId})`);
+                  
                   // Fetch videos for this subject (from teacher-created content)
-                  const videosResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/videos?subject=${subject.name}`, {
+                  const videosResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/videos?subject=${encodeURIComponent(subjectId)}`, {
                     headers: {
                       'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                       'Content-Type': 'application/json',
                     }
                   });
-                  const videosData = videosResponse.ok ? await videosResponse.json() : { data: [] };
-                  const videos = videosData.data || videosData;
+                  
+                  let videos = [];
+                  if (videosResponse.ok) {
+                    const videosData = await videosResponse.json();
+                    console.log(`Videos response for ${subject.name}:`, videosData);
+                    videos = videosData.data || videosData.videos || videosData || [];
+                    if (!Array.isArray(videos)) videos = [];
+                  } else {
+                    console.error(`Failed to fetch videos for ${subject.name}:`, videosResponse.status);
+                  }
 
-                  // Fetch quizzes for this subject (from teacher-created content)
-                  const quizzesResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${subject.name}`, {
+                  // Fetch assessments/quizzes for this subject (from teacher-created content)
+                  const assessmentsResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${encodeURIComponent(subjectId)}`, {
                     headers: {
                       'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                       'Content-Type': 'application/json',
                     }
                   });
-                  const quizzesData = quizzesResponse.ok ? await quizzesResponse.json() : { data: [] };
-                  const quizzes = quizzesData.data || quizzesData;
+                  
+                  let assessments = [];
+                  if (assessmentsResponse.ok) {
+                    const assessmentsData = await assessmentsResponse.json();
+                    console.log(`Assessments response for ${subject.name}:`, assessmentsData);
+                    assessments = assessmentsData.data || assessmentsData.assessments || assessmentsData.quizzes || assessmentsData || [];
+                    if (!Array.isArray(assessments)) assessments = [];
+                  } else {
+                    console.error(`Failed to fetch assessments for ${subject.name}:`, assessmentsResponse.status);
+                  }
 
-                  // Fetch assessments for this subject (from teacher-created content)
-                  const assessmentsResponse = await fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${subject.name}`, {
-                    headers: {
-                      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                      'Content-Type': 'application/json',
-                    }
-                  });
-                  const assessmentsData = assessmentsResponse.ok ? await assessmentsResponse.json() : { data: [] };
-                  const assessments = assessmentsData.data || assessmentsData;
+                  const totalContent = videos.length + assessments.length;
+                  console.log(`Subject ${subject.name}: ${videos.length} videos, ${assessments.length} assessments, ${totalContent} total`);
 
                   return {
                     ...subject,
-                    videos: videos.videos || videos || [],
-                    quizzes: quizzes.quizzes || quizzes || [],
-                    assessments: assessments.assessments || assessments || [],
-                    totalContent: (videos.videos || videos || []).length + 
-                                 (quizzes.quizzes || quizzes || []).length + 
-                                 (assessments.assessments || assessments || []).length
+                    videos: videos,
+                    quizzes: assessments,
+                    assessments: assessments,
+                    totalContent: totalContent
                   };
                 } catch (error) {
                   console.error(`Failed to fetch content for subject ${subject.name}:`, error);

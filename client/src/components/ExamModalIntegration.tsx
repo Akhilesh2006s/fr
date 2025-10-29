@@ -139,3 +139,6 @@ export function AddModalButtonsToDetailedAnalysis({ examResult, questions }) {
     </>
   );
 }
+
+
+

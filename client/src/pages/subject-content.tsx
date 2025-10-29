@@ -81,14 +81,20 @@ export default function SubjectContent() {
 
   const fetchSubjectContent = async (subjectId: string) => {
     try {
-      const [subjectResponse, assessmentsResponse] = await Promise.all([
+      const [subjectResponse, videosResponse, assessmentsResponse] = await Promise.all([
         fetch(`https://asli-stud-back-production.up.railway.app/api/subjects/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
           }
         }),
-        fetch('https://asli-stud-back-production.up.railway.app/api/student/assessments', {
+        fetch(`https://asli-stud-back-production.up.railway.app/api/student/videos?subject=${encodeURIComponent(subjectId)}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json',
+          }
+        }),
+        fetch(`https://asli-stud-back-production.up.railway.app/api/student/assessments?subject=${encodeURIComponent(subjectId)}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
@@ -148,32 +154,22 @@ export default function SubjectContent() {
         subjectName = 'Sample Subject';
       }
       
+      // Attach subject-specific videos
+      if (videosResponse.ok) {
+        const vidCt = videosResponse.headers.get('content-type');
+        if (vidCt && vidCt.includes('application/json')) {
+          const videosData = await videosResponse.json();
+          const videosList = (videosData.data || videosData.videos || videosData) as any[];
+          setSubject(prev => prev ? { ...prev, videos: videosList } as any : prev);
+        }
+      }
+
       if (assessmentsResponse.ok) {
         const contentType = assessmentsResponse.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const assessmentsData = await assessmentsResponse.json();
-          console.log('All assessments:', assessmentsData);
-          
-          // Filter assessments that belong to this subject
-          const subjectAssessments = assessmentsData.filter((assessment: any) => {
-            console.log('Checking assessment:', assessment.title, 'subjectIds:', assessment.subjectIds);
-            console.log('Subject name to match:', subjectName);
-            
-            // Check if subjectIds is an array and contains the subject name
-            if (assessment.subjectIds && Array.isArray(assessment.subjectIds)) {
-              return assessment.subjectIds.includes(subjectName);
-            }
-            
-            // Also check if subjectIds is a string (in case it's not an array)
-            if (assessment.subjectIds && typeof assessment.subjectIds === 'string') {
-              return assessment.subjectIds === subjectName;
-            }
-            
-            return false;
-          });
-          
-          console.log('Filtered assessments for subject:', subjectAssessments);
-          setAssessments(subjectAssessments);
+          const list = (assessmentsData.data || assessmentsData.assessments || assessmentsData) as any[];
+          setAssessments(list);
         } else {
           console.warn('Assessments response is not JSON, using empty array');
           setAssessments([]);

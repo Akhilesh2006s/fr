@@ -164,6 +164,12 @@ const ClassDashboard = () => {
       }
       
       // Use the data directly from backend (already grouped by class)
+      console.log('Classes data received:', data);
+      console.log('Classes with students:', data.map(c => ({ 
+        name: c.name, 
+        studentCount: c.studentCount, 
+        students: c.students?.length || 0 
+      })));
       setClasses(data);
     } catch (error) {
       console.error('Failed to fetch classes:', error);
@@ -477,7 +483,8 @@ const ClassDashboard = () => {
                 <div className="space-y-2">
                   <h4 className="font-semibold text-sky-900 text-sm">Students:</h4>
                   <div className="space-y-1 max-h-32 overflow-y-auto">
-                    {classItem.students.map(student => (
+                    {classItem.students && classItem.students.length > 0 ? (
+                      classItem.students.map(student => (
                       <div key={student.id} className="flex items-center justify-between bg-white/50 rounded-lg p-2">
                         <div>
                           <p className="text-sm font-medium text-sky-900">{student.name}</p>
@@ -487,7 +494,12 @@ const ClassDashboard = () => {
                           {student.status}
                         </Badge>
                       </div>
-                    ))}
+                      ))
+                    ) : (
+                      <div className="text-sm text-sky-600 text-center py-2">
+                        No students assigned to this class
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

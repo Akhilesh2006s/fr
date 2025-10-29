@@ -29,7 +29,8 @@ import {
   Sparkles,
   Wrench,
   LogOut,
-  Menu
+  Menu,
+  Search
 } from 'lucide-react';
 
 interface TeacherStats {
@@ -46,9 +47,6 @@ interface Student {
   name: string;
   email: string;
   classNumber: string;
-  performance: number;
-  lastExamScore: number;
-  totalExams: number;
 }
 
 interface Video {
@@ -86,9 +84,11 @@ const TeacherDashboard = () => {
     recentActivity: []
   });
   const [students, setStudents] = useState<Student[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [videos, setVideos] = useState<Video[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [assignedClasses, setAssignedClasses] = useState<any[]>([]);
+  const [teacherSubjects, setTeacherSubjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [teacherEmail, setTeacherEmail] = useState<string>(localStorage.getItem('userEmail') || '');
   const [, setLocation] = useLocation();
@@ -97,6 +97,8 @@ const TeacherDashboard = () => {
   // Modal states
   const [isAddVideoModalOpen, setIsAddVideoModalOpen] = useState(false);
   const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] = useState(false);
+  const [isVideoViewerOpen, setIsVideoViewerOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
   const [isCreatingAssessment, setIsCreatingAssessment] = useState(false);
 
@@ -107,7 +109,7 @@ const TeacherDashboard = () => {
     videoUrl: '',
     subject: '',
     duration: '',
-    difficulty: 'medium'
+    difficulty: 'beginner' // Changed from 'medium' to 'beginner'
   });
 
   const [assessmentForm, setAssessmentForm] = useState({
@@ -116,7 +118,8 @@ const TeacherDashboard = () => {
     subject: '',
     questions: '',
     timeLimit: '',
-    difficulty: 'medium'
+    difficulty: 'medium',
+    link: '' // Add Google Drive link field
   });
 
   // Lesson Plan form state
@@ -141,6 +144,76 @@ const TeacherDashboard = () => {
     setLocation('/auth/login');
   };
 
+  const handleViewVideo = (video: any) => {
+    setSelectedVideo(video);
+    setIsVideoViewerOpen(true);
+  };
+
+  const handleDeleteVideo = async (video: any) => {
+    if (!confirm(`Are you sure you want to delete "${video.title}"?`)) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`https://asli-stud-back-production.up.railway.app/api/videos/${video.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        setVideos(prev => prev.filter(v => v.id !== video.id));
+        alert('Video deleted successfully!');
+      } else {
+        const error = await response.json().catch(() => ({ message: 'Failed to delete video' }));
+        alert(`Failed to delete video: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Delete video error:', error);
+      alert('Failed to delete video. Please try again.');
+    }
+  };
+
+  const handleDeleteAssessment = async (assessment: any) => {
+    if (!confirm('Delete this assessment?')) return;
+
+    const id = assessment?._id || assessment?.id;
+    if (!id) {
+      alert('Invalid assessment id');
+      return;
+    }
+
+    const token = localStorage.getItem('authToken');
+
+    const tryDelete = async (url: string) => {
+      return fetch(url, {
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+    };
+
+    const urls = [
+      `https://asli-stud-back-production.up.railway.app/api/teacher/assessments/${id}`,
+      `https://asli-stud-back-production.up.railway.app/api/admin/assessments/${id}`,
+      `https://asli-stud-back-production.up.railway.app/api/assessments/${id}`
+    ];
+
+    for (const url of urls) {
+      try {
+        const res = await tryDelete(url);
+        if (res.ok) {
+          setAssessments(prev => prev.filter(a => (a._id || a.id) !== id));
+          alert('Assessment deleted');
+          return;
+        }
+      } catch (e) {
+        // try next
+      }
+    }
+
+    alert('Delete failed. Ensure you are logged in and creator of the assessment.');
+  };
+
   const handleCreateVideo = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreatingVideo(true);
@@ -150,46 +223,82 @@ const TeacherDashboard = () => {
       console.log('Creating video with data:', videoForm);
       console.log('Using token:', token ? 'Token present' : 'No token');
       
-      // REAL API CALL - Backend is now fixed!
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/test-video-simple', {
+      // Convert YouTube watch/short URL to embeddable URL
+      const toEmbedUrl = (url: string) => {
+        try {
+          if (!url) return '';
+          const u = new URL(url);
+          // youtu.be/<id>
+          if (u.hostname.includes('youtu.be')) {
+            const id = u.pathname.split('/').filter(Boolean).pop();
+            return id ? `https://www.youtube.com/embed/${id}` : url;
+          }
+          // www.youtube.com/watch?v=<id>
+          const id = u.searchParams.get('v');
+          if (id) return `https://www.youtube.com/embed/${id}`;
+          return url;
+        } catch {
+          return url;
+        }
+      };
+
+      const payload = {
+        ...videoForm,
+        videoUrl: toEmbedUrl(videoForm.videoUrl),
+        difficulty: videoForm.difficulty === 'medium' ? 'intermediate' : videoForm.difficulty
+      };
+
+      // Use teacher endpoint with auth so createdBy/adminId are set to the teacher
+      let response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher/videos', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(videoForm)
+        body: JSON.stringify(payload)
       });
 
       console.log('Response status:', response.status);
       console.log('Response ok:', response.ok);
 
-      if (response.ok) {
+      // If Railway API failed, try test endpoint
+      if (!response.ok) {
+        try {
+          response = await fetch('https://asli-stud-back-production.up.railway.app/api/test-video-simple', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (e) {
+          // continue to mock fallback below
+        }
+      }
+
+      if (response && response.ok) {
         const result = await response.json();
-        const newVideo = result.data || result; // Handle both response formats
-        setVideos(prev => [...prev, newVideo]);
-        setIsAddVideoModalOpen(false);
-        setVideoForm({ title: '', description: '', videoUrl: '', subject: '', duration: '', difficulty: 'medium' });
-        alert('Video created successfully!');
-        // Refresh teacher data to update stats
-        await fetchTeacherData();
-      } else {
-        const error = await response.json();
-        console.log('API failed, falling back to mock creation');
-        
-        // Fallback to mock creation if API fails
-        const mockVideo = {
-          id: `mock-${Date.now()}`,
-          title: videoForm.title,
-          subject: videoForm.subject,
-          duration: videoForm.duration,
-          views: 0,
-          createdAt: new Date().toISOString()
+        const created: any = result && (result.data || result);
+        const normalized = {
+          id: created._id || created.id || `tmp-${Date.now()}`,
+          title: created.title || payload.title,
+          subject: created.subject || created.subjectId || payload.subject,
+          duration: created.duration || payload.duration,
+          views: created.views || 0,
+          createdAt: created.createdAt || new Date().toISOString(),
+          videoUrl: created.videoUrl || payload.videoUrl,
+          difficulty: created.difficulty || payload.difficulty
         };
-        
-        setVideos(prev => [...prev, mockVideo]);
+        setVideos(prev => [normalized, ...prev]);
+
+        // Show success message first
+        alert('Video created successfully!');
+
+        // Close modal and reset form without re-fetching to avoid disappearance
         setIsAddVideoModalOpen(false);
-        setVideoForm({ title: '', description: '', videoUrl: '', subject: '', duration: '', difficulty: 'medium' });
-        alert('Video created successfully! (Using fallback method)');
-        await fetchTeacherData();
+        setVideoForm({ title: '', description: '', videoUrl: '', subject: '', duration: '', difficulty: 'beginner' });
+      } else {
+        const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+        console.log('Video creation error details:', error);
+        alert(`Failed to create video: ${error.message || error.error || 'Server error'}`);
       }
     } catch (error) {
       console.error('Failed to create video:', error);
@@ -239,27 +348,91 @@ const TeacherDashboard = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('https://asli-stud-back-production.up.railway.app/api/teacher-assessments-admin-style', {
+
+      // Ensure we send a subject ID, not a display name
+      const subjectFromForm = (assessmentForm.subject || '').toString();
+      const subjectCandidate = teacherSubjects?.find?.((s: any) => (s._id || s.id) === subjectFromForm || s.name === subjectFromForm);
+      const subjectIdToSend = (subjectCandidate && (subjectCandidate._id || subjectCandidate.id)) || subjectFromForm;
+
+      const payload = {
+        title: assessmentForm.title?.trim(),
+        description: assessmentForm.description || '',
+        // Subject forms for compatibility
+        subject: subjectIdToSend,
+        subjectIds: [subjectIdToSend],
+        // Questions must be an array in some deployed versions
+        questions: [],
+        // Provide both totalPoints and totalMarks for compatibility
+        totalPoints: Number(assessmentForm.questions) || 10,
+        totalMarks: Number(assessmentForm.questions) || 10,
+        // Provide both timeLimit and duration for compatibility
+        timeLimit: Number(assessmentForm.timeLimit) || 30,
+        duration: Number(assessmentForm.timeLimit) || 30,
+        difficulty: (assessmentForm.difficulty || 'beginner').toLowerCase() === 'medium' ? 'intermediate' : (assessmentForm.difficulty || 'beginner'),
+        link: assessmentForm.link || '',
+        driveLink: assessmentForm.link || ''
+      };
+
+      // Create on Railway with JWT auth
+      if (!token) {
+        alert('You are not logged in. Please login again.');
+        return;
+      }
+
+      const response = await fetch('/api/create-assessment', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(assessmentForm)
+        body: JSON.stringify({
+          title: assessmentForm.title?.trim(),
+          description: assessmentForm.description || '',
+          subject: subjectIdToSend,
+          difficulty: (assessmentForm.difficulty || 'beginner').toLowerCase() === 'medium' ? 'intermediate' : (assessmentForm.difficulty || 'beginner'),
+          duration: Number(assessmentForm.timeLimit) || 30,
+          totalMarks: Number(assessmentForm.questions) || 10,
+          driveLink: assessmentForm.link || '',
+          isDriveQuiz: !!assessmentForm.link
+        })
       });
 
-      if (response.ok) {
-        const newAssessment = await response.json();
-        setAssessments(prev => [...prev, newAssessment]);
-        setIsAddAssessmentModalOpen(false);
-        setAssessmentForm({ title: '', description: '', subject: '', questions: '', timeLimit: '', difficulty: 'medium' });
-        alert('Assessment created successfully!');
-        // Refresh teacher data to update stats
-        await fetchTeacherData();
-      } else {
-        const error = await response.json();
-        alert(`Failed to create assessment: ${error.message}`);
+      if (!response.ok) {
+        // Try to parse JSON; if it fails, show raw text
+        let serverMessage = 'Server error';
+        try {
+          const errJson = await response.json();
+          serverMessage = errJson.message || errJson.error || JSON.stringify(errJson);
+          console.error('Assessment creation error JSON:', errJson);
+        } catch (e) {
+          const errText = await response.text().catch(() => '');
+          if (errText) {
+            serverMessage = errText;
+            console.error('Assessment creation error TEXT:', errText);
+          }
+        }
+        alert(`Assessment creation failed: ${serverMessage}`);
+        return;
       }
+
+      const created: any = await response.json();
+
+      const normalized = {
+        id: created._id || created.id || `assess-${Date.now()}`,
+        title: created.title || assessmentForm.title,
+        subjectIds: created.subjectIds || [subjectIdToSend],
+        driveLink: created.driveLink || assessmentForm.link,
+        totalPoints: created.totalPoints || Number(assessmentForm.questions),
+        attempts: created.attempts || [],
+        createdBy: created.createdBy,
+        duration: created.duration || Number(assessmentForm.timeLimit),
+        difficulty: created.difficulty || assessmentForm.difficulty
+      };
+
+      setAssessments(prev => [normalized, ...prev]);
+      setIsAddAssessmentModalOpen(false);
+      setAssessmentForm({ title: '', description: '', subject: '', questions: '', timeLimit: '', difficulty: 'medium', link: '' });
+      alert('Assessment created successfully!');
+      await fetchTeacherData();
     } catch (error) {
       console.error('Failed to create assessment:', error);
       alert('Failed to create assessment. Please try again.');
@@ -289,9 +462,50 @@ const TeacherDashboard = () => {
           });
           setStudents(data.data.students || []);
           setVideos(data.data.videos || []);
-          setAssessments(data.data.assessments || []);
+          const dashboardAssessments = data.data.assessments || [];
+          let mergedAssessments = dashboardAssessments;
+
+          // Also load published assessments from Railway public endpoint and merge
+          try {
+            const pubRes = await fetch('https://asli-stud-back-production.up.railway.app/api/assessments');
+            if (pubRes.ok) {
+              const pubList = await pubRes.json();
+              if (Array.isArray(pubList)) {
+                const byId = new Map<string, any>();
+                [...dashboardAssessments, ...pubList].forEach((a: any) => {
+                  const id = a?._id || a?.id;
+                  if (id) byId.set(id, a);
+                });
+                mergedAssessments = Array.from(byId.values());
+              }
+            }
+          } catch (e) {
+            console.warn('Public assessments fetch failed, skipping merge');
+          }
+
+          // Fallback: try local dev endpoint if available
+          try {
+            const localRes = await fetch('/api/assessments');
+            if (localRes.ok) {
+              const localList = await localRes.json();
+              if (Array.isArray(localList)) {
+                const byId = new Map<string, any>();
+                [...mergedAssessments, ...localList].forEach((a: any) => {
+                  const id = a?._id || a?.id;
+                  if (id) byId.set(id, a);
+                });
+                mergedAssessments = Array.from(byId.values());
+              }
+            }
+          } catch (e) {
+            console.warn('Local assessments fetch failed, skipping merge');
+          }
+
+          setAssessments(mergedAssessments);
           setTeacherEmail(data.data.teacherEmail || '');
           setAssignedClasses(data.data.assignedClasses || []);
+          setTeacherSubjects(data.data.teacherSubjects || []);
+          console.log('Teacher subjects received:', data.data.teacherSubjects);
         } else {
           console.error('API returned success: false:', data.message);
         }
@@ -310,6 +524,7 @@ const TeacherDashboard = () => {
         setVideos([]);
         setAssessments([]);
         setAssignedClasses([]);
+        setTeacherSubjects([]);
       }
     } catch (error) {
       console.error('Failed to fetch teacher data:', error);
@@ -326,6 +541,7 @@ const TeacherDashboard = () => {
       setVideos([]);
       setAssessments([]);
       setAssignedClasses([]);
+      setTeacherSubjects([]);
     } finally {
       setIsLoading(false);
     }
@@ -879,18 +1095,18 @@ const TeacherDashboard = () => {
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">My Videos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {videos.map((video) => (
-                    <div key={video.id} className="bg-gray-50 rounded-xl p-4">
+                  {videos.map((video, index) => (
+                    <div key={video.id || (video as any)._id || index} className="bg-gray-50 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-medium text-gray-900">{video.title}</h4>
                         <div className="flex space-x-2">
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => handleViewVideo(video)}>
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button size="sm" variant="outline">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => handleDeleteVideo(video)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -921,16 +1137,28 @@ const TeacherDashboard = () => {
                           <Button size="sm" variant="outline">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => handleDeleteAssessment(assessment)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{assessment.subject}</p>
+                      <p className="text-sm text-gray-600 mb-2">{assessment.subjectIds?.[0] || assessment.subject}</p>
                       <p className="text-xs text-gray-500 mb-2">Created by: {assessment.createdBy?.name || 'Unknown'}</p>
+                      {assessment.driveLink && (
+                        <div className="mb-2">
+                          <a 
+                            href={assessment.driveLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 text-sm underline"
+                          >
+                            📎 Open Link
+                          </a>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span>{assessment.questions} questions</span>
-                        <span>{assessment.attempts} attempts</span>
+                        <span>{assessment.totalPoints || assessment.questions?.length || 0} questions</span>
+                        <span>{assessment.attempts?.length || 0} attempts</span>
                       </div>
                     </div>
                   ))}
@@ -944,10 +1172,6 @@ const TeacherDashboard = () => {
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-responsive-xl font-bold text-gray-900">My Classes</h2>
-                <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Assign to Class
-                </Button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -977,6 +1201,26 @@ const TeacherDashboard = () => {
                           <span className="font-medium">{classItem.room}</span>
                         </div>
                       </div>
+                      
+                      {/* Students List */}
+                      {classItem.students && classItem.students.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <h4 className="font-semibold text-gray-900 text-sm">Students:</h4>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {classItem.students.map(student => (
+                              <div key={student.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{student.name}</p>
+                                  <p className="text-xs text-gray-600">{student.email}</p>
+                                </div>
+                                <Badge variant="outline" className="text-xs border-green-200 text-green-700">
+                                  {student.status}
+                                </Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div className="mt-4 flex space-x-2">
                         <Button size="sm" className="flex-1">View Students</Button>
                         <Button size="sm" variant="outline">Manage</Button>
@@ -1005,9 +1249,18 @@ const TeacherDashboard = () => {
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-responsive-xl font-bold text-gray-900">My Students</h2>
-                <div className="flex space-x-3">
-                  <Button variant="outline">Filter</Button>
-                  <Button variant="outline">Export</Button>
+              </div>
+
+              {/* Search Bar */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+                  <Input
+                    placeholder="Search students by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full rounded-xl bg-white/70 border-gray-200 text-gray-900 backdrop-blur-sm"
+                  />
                 </div>
               </div>
 
@@ -1018,13 +1271,15 @@ const TeacherDashboard = () => {
                       <tr className="border-b border-gray-200">
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Student</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Class</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Performance</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Last Exam</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {students.map((student) => (
+                      {students
+                        .filter(student => 
+                          student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          student.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                        .map((student) => (
                         <tr key={student.id} className="border-b border-gray-100">
                           <td className="py-3 px-4">
                             <div>
@@ -1034,29 +1289,6 @@ const TeacherDashboard = () => {
                           </td>
                           <td className="py-3 px-4">
                             <Badge className="bg-blue-100 text-blue-800">{student.classNumber}</Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center">
-                              <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                <div 
-                                  className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" 
-                                  style={{ width: `${student.performance}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm text-gray-600">{student.performance}%</span>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center">
-                              <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                              <span className="text-sm text-gray-600">{student.lastExamScore}%</span>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">View</Button>
-                              <Button size="sm" variant="outline">Message</Button>
-                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1116,14 +1348,32 @@ const TeacherDashboard = () => {
             </div>
             <div>
               <Label htmlFor="video-subject" className="text-gray-700 font-medium">Subject *</Label>
-              <Input
-                id="video-subject"
-                value={videoForm.subject}
-                onChange={(e) => setVideoForm(prev => ({ ...prev, subject: e.target.value }))}
-                placeholder="e.g., Mathematics, Science"
-                required
-                className="mt-1"
-              />
+              {teacherSubjects.length === 0 && (
+                <div className="mt-1 mb-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <strong>No subjects assigned:</strong> You need to be assigned subjects by an admin before creating videos. 
+                    Please contact your administrator to assign subjects to your account.
+                  </p>
+                </div>
+              )}
+              <Select value={videoForm.subject} onValueChange={(value) => setVideoForm(prev => ({ ...prev, subject: value }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teacherSubjects.length > 0 ? (
+                    teacherSubjects.map(subject => (
+                      <SelectItem key={subject._id || subject.id} value={subject.name}>
+                        {subject.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-subjects" disabled>
+                      No subjects assigned - Contact admin to assign subjects
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="video-duration" className="text-gray-700 font-medium">Duration (minutes) *</Label>
@@ -1154,8 +1404,8 @@ const TeacherDashboard = () => {
               <Button type="button" variant="outline" onClick={() => setIsAddVideoModalOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isCreatingVideo} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
-                {isCreatingVideo ? 'Creating...' : 'Create Video'}
+              <Button type="submit" disabled={isCreatingVideo || teacherSubjects.length === 0} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                {isCreatingVideo ? 'Creating...' : teacherSubjects.length === 0 ? 'No Subjects Assigned' : 'Create Video'}
               </Button>
             </div>
           </form>
@@ -1195,14 +1445,32 @@ const TeacherDashboard = () => {
             </div>
             <div>
               <Label htmlFor="assessment-subject" className="text-gray-700 font-medium">Subject *</Label>
-              <Input
-                id="assessment-subject"
-                value={assessmentForm.subject}
-                onChange={(e) => setAssessmentForm(prev => ({ ...prev, subject: e.target.value }))}
-                placeholder="e.g., Mathematics, Science"
-                required
-                className="mt-1"
-              />
+              {teacherSubjects.length === 0 && (
+                <div className="mt-1 mb-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <strong>No subjects assigned:</strong> You need to be assigned subjects by an admin before creating assessments. 
+                    Please contact your administrator to assign subjects to your account.
+                  </p>
+                </div>
+              )}
+              <Select value={assessmentForm.subject} onValueChange={(value) => setAssessmentForm(prev => ({ ...prev, subject: value }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teacherSubjects.length > 0 ? (
+                    teacherSubjects.map(subject => (
+                      <SelectItem key={subject._id || subject.id} value={subject.name}>
+                        {subject.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-subjects" disabled>
+                      No subjects assigned - Contact admin to assign subjects
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="assessment-questions" className="text-gray-700 font-medium">Number of Questions *</Label>
@@ -1240,15 +1508,90 @@ const TeacherDashboard = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label htmlFor="assessment-link" className="text-gray-700 font-medium">Google Drive Link</Label>
+              <Input
+                id="assessment-link"
+                type="url"
+                value={assessmentForm.link}
+                onChange={(e) => setAssessmentForm(prev => ({ ...prev, link: e.target.value }))}
+                placeholder="https://drive.google.com/file/d/..."
+                className="mt-1"
+              />
+              <p className="text-xs text-gray-500 mt-1">Optional: Link to Google Drive document or any other resource</p>
+            </div>
             <div className="flex justify-end space-x-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsAddAssessmentModalOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isCreatingAssessment} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
-                {isCreatingAssessment ? 'Creating...' : 'Create Assessment'}
+              <Button type="submit" disabled={isCreatingAssessment || teacherSubjects.length === 0} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+                {isCreatingAssessment ? 'Creating...' : teacherSubjects.length === 0 ? 'No Subjects Assigned' : 'Create Assessment'}
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Video Viewer Modal */}
+      <Dialog open={isVideoViewerOpen} onOpenChange={setIsVideoViewerOpen}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-800">
+              {selectedVideo?.title || 'Video Viewer'}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedVideo?.description || 'Watch your uploaded video'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedVideo && (
+            <div className="space-y-4">
+              {/* Video Player */}
+              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                {selectedVideo.videoUrl ? (
+                  <iframe
+                    src={selectedVideo.videoUrl}
+                    title={selectedVideo.title}
+                    className="w-full h-full"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-white">
+                    <div className="text-center">
+                      <Play className="w-16 h-16 mx-auto mb-4" />
+                      <p>Video URL not available</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Video Details */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-gray-700">Subject:</span>
+                  <span className="ml-2 text-gray-900">{selectedVideo.subject}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Duration:</span>
+                  <span className="ml-2 text-gray-900">{selectedVideo.duration} minutes</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Difficulty:</span>
+                  <span className="ml-2 text-gray-900 capitalize">{selectedVideo.difficulty}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Views:</span>
+                  <span className="ml-2 text-gray-900">{selectedVideo.views || 0}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex justify-end pt-4">
+            <Button variant="outline" onClick={() => setIsVideoViewerOpen(false)}>
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
